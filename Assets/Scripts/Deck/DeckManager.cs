@@ -10,6 +10,9 @@ public class DeckManager : MonoBehaviour
     
     private DeckBuilder deckBuilder;
     private List<Card> pack;
+    
+    public delegate void CardClicked(Card playedCard, int playerIndex);
+    public event CardClicked EACardClicked;
 
     private void Awake()
     {
@@ -44,6 +47,11 @@ public class DeckManager : MonoBehaviour
     public void GivePlayersCard(int playerCount, int numCardsToGive)
     {
         List<Card> cardsToPlay = pack.TakeRandom(numCardsToGive*playerCount);
-        PlayerManager.Instance.GivePlayersCards(cardsToPlay);
+        PlayerManager.Instance.GivePlayersCard(cardsToPlay);
+    }
+
+    public void PlayerInteractedWithCard(Card card,int playerIndex)
+    {
+        EACardClicked?.Invoke(card,playerIndex);
     }
 }

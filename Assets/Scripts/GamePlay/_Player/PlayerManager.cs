@@ -14,6 +14,12 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Transform[] playerSpawnLocs;
     [SerializeField] private Transform playerContainer;
     private List<Player> players = new List<Player>();
+    
+    public delegate void PlayerPlayed(Card playedCard);
+    public event PlayerPlayed EAPlayerPlayed;
+    
+    public delegate void PlayerTookCards(Card[] playedCard,int playerIndex);
+    public event PlayerTookCards EPlayerTookCards;
     private void Awake()
     {
         if (instance != null)
@@ -25,6 +31,15 @@ public class PlayerManager : MonoBehaviour
         instance = this;
     }
 
+    private void Start()
+    {
+        DeckManager.Instance.EACardClicked += PlayerClickedACard;
+    }
+
+    private void PlayerClickedACard(Card playedCard, int playerIndex)
+    {
+        players[playerIndex].TryPlay(playedCard);
+    }
 
     public void CreatePlayers(int playerCount)
     {
@@ -40,14 +55,20 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void OnPlayerMadeMove(Card asd)
+    public void OnPlayerMadeMove(Card playedCard,Player player)
     {
-        Debug.Log("PlayerPlayed");
+        player.PermissionToPlay = false;
+        EAPlayerPlayed?.Invoke(playedCard);
     }
 
+    public void TakePlayerPermissionToPlay(int playerIndex)
+    {
+        players[playerIndex].PermissionToPlay = false;
+    }
+    
     public void GivePlayerPermissionToPlay(int playerIndex)
     {
-        
+        players[playerIndex].PermissionToPlay = true;
     }
 
     public bool CanPlayersPlayAnotherRound()
@@ -68,13 +89,20 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void GivePlayersCards(List<Card> cardsToPlay)
+    public void GivePlayersCard(List<Card> cardsToPlay)
     {
         var howManyCardsShouldEachPlayerHave = cardsToPlay.Count / players.Count;
         for (int i = 0; i < players.Count; i++)
         {
             var list =cardsToPlay.Skip(i*howManyCardsShouldEachPlayerHave).Take((i+1)*howManyCardsShouldEachPlayerHave);
-            players[i].TakeCards(list);
+            var playedCard = list as Card[] ?? list.ToArray();
+            players[i].TakeCards(playedCard);
+            EPlayerTookCards?.Invoke(playedCard,i);
         }
+    }
+
+    private void OnDisable()
+    {
+        DeckManager.Instance.EACardClicked -= PlayerClickedACard;
     }
 }

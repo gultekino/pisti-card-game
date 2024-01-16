@@ -10,24 +10,33 @@ public class Player : MonoBehaviour
     private List<Card> cardsInHand = new List<Card>();
     private List<Card> cardsInStash =new List<Card>();
     
-    public delegate void PlayerPlayed(Card playedCard);
+    public delegate void PlayerPlayed(Card playedCard,Player player);
     public event PlayerPlayed EPlayerPlayed;
-    
+    public bool PermissionToPlay { get; set; }
+
     public bool CanPlayARound()
     {
         return cardsInHand.Count != 0;
     }
-
-    private void Update()
+    
+    public void PlayCard(Card card)
     {
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            EPlayerPlayed?.Invoke(new Card(null, 3, Shape.Club, 3, CardColor.Black));
-        }
+        
     }
 
+    
     public void TakeCards(IEnumerable<Card> cardsToPlay)
     {
         cardsInHand.AddRange(cardsToPlay);
+    }
+
+    public void TryPlay(Card playedCard)
+    {
+        if (cardsInHand.Contains(playedCard) && PermissionToPlay)
+        {
+            Debug.Log("Played");
+            EPlayerPlayed?.Invoke(playedCard,this);
+            cardsInHand.Remove(playedCard);
+        }
     }
 }
