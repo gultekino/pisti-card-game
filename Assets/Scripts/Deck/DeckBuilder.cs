@@ -11,12 +11,7 @@ public class DeckBuilder : MonoBehaviour
     [SerializeField] private Transform CardContainer;
     [SerializeField] private Suit[] suits;
     
-    private void Start()
-    {
-        BuildDeck();
-    }
-
-    List<Card> BuildDeck()
+    public List<Card> BuildDeck()
     {
         List<Card> cards = new List<Card>(52);
         for (int i = 0; i < suits.Length; i++)
