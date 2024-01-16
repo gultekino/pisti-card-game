@@ -34,7 +34,6 @@ public class Player : MonoBehaviour
     {
         if (cardsInHand.Contains(playedCard) && PermissionToPlay)
         {
-            Debug.Log("Played");
             EPlayerPlayed?.Invoke(playedCard,this);
             cardsInHand.Remove(playedCard);
         }

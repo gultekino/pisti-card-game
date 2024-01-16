@@ -931,7 +931,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0c4708bd942949ea87a9696e6af9fe9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CardPrefab: {fileID: 7853569441848439382, guid: 1e47dbae97f454b7e8f66568e31b9ddc, type: 3}
+  CardPrefab: {fileID: 1159154487039720770, guid: 1e47dbae97f454b7e8f66568e31b9ddc, type: 3}
   CardContainer: {fileID: 1769021543}
   suits:
   - shape: 1

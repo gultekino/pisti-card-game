@@ -10,6 +10,7 @@ public class DeckManager : MonoBehaviour
     
     private DeckBuilder deckBuilder;
     private List<Card> pack;
+    private List<Card> playedCards = new List<Card>();
     
     public delegate void CardClicked(Card playedCard, int playerIndex);
     public event CardClicked EACardClicked;
@@ -36,17 +37,18 @@ public class DeckManager : MonoBehaviour
 
     public bool DoesPackHasCardsForAnotherRound(int playerCount, int cardsToGivePlayer)
     {
-        return pack.Count > (playerCount * cardsToGivePlayer);
-       /* if (pack.Count>(playerCount*cardsToGivePlayer))
-        {
-            return true;
-        }
-        return false;*/
+        return pack.Count > 0;
+        // return pack.Count > (playerCount * cardsToGivePlayer);
     }
 
     public void GivePlayersCard(int playerCount, int numCardsToGive)
     {
-        List<Card> cardsToPlay = pack.TakeRandom(numCardsToGive*playerCount);
+        int takeRandomNum = numCardsToGive * playerCount;
+        if (pack.Count<takeRandomNum)
+            takeRandomNum = pack.Count;
+
+        List<Card> cardsToPlay = pack.TakeRandom(takeRandomNum);
+        playedCards.AddRange(cardsToPlay);
         PlayerManager.Instance.GivePlayersCard(cardsToPlay);
     }
 
