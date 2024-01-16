@@ -7,16 +7,11 @@ using UnityEngine;
 
 public class DeckBuilder : MonoBehaviour
 {
-    [SerializeField] private GameObject CardPrefab;
+    [SerializeField] private Card CardPrefab;
     [SerializeField] private Transform CardContainer;
     [SerializeField] private Suit[] suits;
     
-    private void Start()
-    {
-        BuildDeck();
-    }
-
-    List<Card> BuildDeck()
+    public List<Card> BuildDeck()
     {
         List<Card> cards = new List<Card>(52);
         for (int i = 0; i < suits.Length; i++)
@@ -31,9 +26,9 @@ public class DeckBuilder : MonoBehaviour
         for (int i = 1; i <= 13; i++)
         {
             if (i > 10)
-                cards.Add(new Card(InstantiateImageCard(suit, i), i, suit.Shape, 0, suit.Color));
+                cards.Add(InstantiateImageCard(suit, i));
             else
-                cards.Add(new Card(InstantiateRegularCard(suit, i), i, suit.Shape, 0, suit.Color));
+                cards.Add(InstantiateRegularCard(suit, i));
         }
     }
 
@@ -56,26 +51,18 @@ public class DeckBuilder : MonoBehaviour
             c.Points = 1;
     }
     
-    private GameObject InstantiateRegularCard(Suit suit, int cardNum)
+    private Card InstantiateRegularCard(Suit suit, int cardNum)
     {
-        GameObject instantiatedObj = Instantiate(CardPrefab,CardContainer);
-        var spriteRenderer = instantiatedObj.GetComponent<SpriteRenderer>();
-        var text = instantiatedObj.GetComponentInChildren<TMP_Text>();
-        spriteRenderer.sprite = suit.DefaultSprite;
-        
-        text.SetText(cardNum.ToString());
+        Card instantiatedObj = Instantiate(CardPrefab,CardContainer);
+        instantiatedObj.CardInit(cardNum,suit.Shape,suit.Color,suit.DefaultSprite,cardNum.ToString());
         return instantiatedObj;
     }
 
-    GameObject InstantiateImageCard(Suit suit, int cardNum)
+    Card InstantiateImageCard(Suit suit, int cardNum)
     {
         int spriteIndexInArray = cardNum - 11;
-        GameObject instantiatedObj = Instantiate(CardPrefab, CardContainer);
-        var spriteRenderer = instantiatedObj.GetComponent<SpriteRenderer>();
-        var text = instantiatedObj.GetComponentInChildren<TMP_Text>();
-
-        spriteRenderer.sprite = suit.ImageSprites[spriteIndexInArray];
-        text.SetText("");
+        Card instantiatedObj = Instantiate(CardPrefab, CardContainer);
+        instantiatedObj.CardInit(cardNum,suit.Shape,suit.Color,suit.ImageSprites[spriteIndexInArray],"");
         return instantiatedObj;
     }
 }
