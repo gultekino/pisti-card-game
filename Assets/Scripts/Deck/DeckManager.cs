@@ -9,7 +9,7 @@ public class DeckManager : MonoBehaviour
     private static DeckManager instance;
     
     private DeckBuilder deckBuilder;
-    private List<Card> cards;
+    private List<Card> pack;
 
     private void Awake()
     {
@@ -20,16 +20,30 @@ public class DeckManager : MonoBehaviour
         }
 
         instance = this;
+
+        BuildPack();
     }
 
-    void Start()
+    private void BuildPack()
     {
         deckBuilder = GetComponent<DeckBuilder>();
-        deckBuilder.BuildDeck();
+        pack = deckBuilder.BuildDeck();
+        pack.Shuffle();
     }
 
-    void Update()
+    public bool DoesPackHasCardsForAnotherRound(int playerCount, int cardsToGivePlayer)
     {
-        
+        return pack.Count > (playerCount * cardsToGivePlayer);
+       /* if (pack.Count>(playerCount*cardsToGivePlayer))
+        {
+            return true;
+        }
+        return false;*/
+    }
+
+    public void GivePlayersCard(int playerCount, int numCardsToGive)
+    {
+        List<Card> cardsToPlay = pack.TakeRandom(numCardsToGive*playerCount);
+        PlayerManager.Instance.GivePlayersCards(cardsToPlay);
     }
 }
