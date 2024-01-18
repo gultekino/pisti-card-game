@@ -1,6 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using Random = System.Random;
 
 public static class ListExtentions
 {
@@ -14,9 +15,7 @@ public static class ListExtentions
         {
             n--;
             int k = rng.Next(n + 1);
-            T value = list[k];
-            list[k] = list[n];
-            list[n] = value;
+            (list[k], list[n]) = (list[n], list[k]);
         }
     }
 
@@ -31,5 +30,11 @@ public static class ListExtentions
         }
 
         return randomSelected;
+    }
+    
+    public static void MovePosition<T>(this IList<Card> list, Vector3 loc)
+    {
+        foreach (var e in list)
+            e.transform.position = loc;
     }
 }

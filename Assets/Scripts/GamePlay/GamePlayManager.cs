@@ -15,7 +15,7 @@ public class GamePlayManager : MonoBehaviour
    }
 
    private bool step;
-   private void StepInGameLoop(Card playedcard)
+   private void StepInGameLoop(Card playedcard, Player player)
    {
       step = true;
    }

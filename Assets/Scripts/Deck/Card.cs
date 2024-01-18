@@ -6,12 +6,12 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
-    private int value;
+    private CardNum number;
     private Shape shape;
     private SpriteRenderer spriteRenderer;
     private TMP_Text tmpText;
     
-    public int Value => value;
+    public CardNum Number => number;
 
     public Shape Shape => shape;
 
@@ -29,7 +29,7 @@ public class Card : MonoBehaviour
 
     public void CardInit(int value, Shape shape, CardColor color, Sprite visual, string text)
     {
-        this.value = value;
+        this.number = (CardNum) value;
         this.shape = shape;
         this.Points = Points;
         this.Color = color;

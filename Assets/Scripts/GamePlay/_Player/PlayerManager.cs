@@ -11,11 +11,10 @@ public class PlayerManager : MonoBehaviour
     private static PlayerManager instance;
 
     [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private Transform[] playerSpawnLocs;
     [SerializeField] private Transform playerContainer;
     private List<Player> players = new List<Player>();
     
-    public delegate void PlayerPlayed(Card playedCard);
+    public delegate void PlayerPlayed(Card playedCard,Player player);
     public event PlayerPlayed EAPlayerPlayed;
     
     public delegate void PlayerTookCards(Card[] playedCard,int playerIndex);
@@ -45,8 +44,9 @@ public class PlayerManager : MonoBehaviour
     {
         for (int i = 0; i < playerCount; i++)
         {
-            var pos = playerSpawnLocs[players.Count].position;
-            var rot = playerSpawnLocs[players.Count].rotation;
+            var playerSpawnLoc = TableManager.Instance.GetPlayerLoc(i);
+            var pos = playerSpawnLoc.position;
+            var rot = playerSpawnLoc.rotation;
             var go = Instantiate(playerPrefab, pos, rot, playerContainer);
             var playerC = go.GetComponent<Player>();
             playerC.EPlayerPlayed += OnPlayerMadeMove;
@@ -58,7 +58,7 @@ public class PlayerManager : MonoBehaviour
     public void OnPlayerMadeMove(Card playedCard,Player player)
     {
         player.PermissionToPlay = false;
-        EAPlayerPlayed?.Invoke(playedCard);
+        EAPlayerPlayed?.Invoke(playedCard,player);
     }
 
     public void TakePlayerPermissionToPlay(int playerIndex)

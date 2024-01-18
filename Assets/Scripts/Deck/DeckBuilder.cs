@@ -10,7 +10,7 @@ public class DeckBuilder : MonoBehaviour
     [SerializeField] private Card CardPrefab;
     [SerializeField] private Transform CardContainer;
     [SerializeField] private Suit[] suits;
-    
+
     public List<Card> BuildDeck()
     {
         List<Card> cards = new List<Card>(52);
@@ -34,19 +34,19 @@ public class DeckBuilder : MonoBehaviour
 
     private void GivePointsToTheCards(List<Card> cards)
     {
-        var clubTwo = cards.Where(card => (card.Value == 2 && card.Shape == Shape.Club));
+        var clubTwo = cards.Where(card => (card.Number == CardNum.Two && card.Shape == Shape.Club));
         foreach (var c in clubTwo)
             c.Points = 2;
         
-        var diaTen = cards.Where(card => (card.Value == 10 && card.Shape == Shape.Diamond));
+        var diaTen = cards.Where(card => (card.Number == CardNum.Ten && card.Shape == Shape.Diamond));
         foreach (var c in diaTen)
             c.Points = 3;
         
-        var a = cards.Where(card => (card.Value == 1));
+        var a = cards.Where(card => (card.Number == CardNum.As));
         foreach (var c in a)
             c.Points = 1;
 
-        var j = cards.Where(card => (card.Value == 11));
+        var j = cards.Where(card => (card.Number == CardNum.J));
         foreach (var c in j)
             c.Points = 1;
     }

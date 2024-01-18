@@ -8,29 +8,65 @@ public class TableManager : MonoBehaviour
 {
     [SerializeField] private Transform[] playerLocationsOnTable;
     [SerializeField] private Transform Center;
+    [SerializeField] private Transform DeckLoc;
+    private List<Card> cardsInTheCenter = new();
+    public static TableManager Instance => instance;
+    private static TableManager instance;
+    
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(this);
+            return;
+        }
+
+        instance = this;
+    }
+
     private void Start()
     {
-        PlayerManager.Instance.EAPlayerPlayed += MoveCardToTheCenter;
-        PlayerManager.Instance.EPlayerTookCards += MoveCardsToPlayersLoc;
+        PlayerManager.Instance.EAPlayerPlayed += HandleCardOnTable;
     }
 
-    private void MoveCardsToPlayersLoc(Card[] playedcard, int playerindex)
+    public Transform GetPlayerLoc(int index)
     {
-        for (int i = 0; i < playedcard.Count(); i++)
-        {
-            playedcard[i].transform.position = playerLocationsOnTable[playerindex].position+Vector3.right*i*1.25f;
-        }
+        return playerLocationsOnTable[index];
     }
 
-
-    private void MoveCardToTheCenter(Card playedcard)
+    public Transform GetDeckLoc()
     {
+        return DeckLoc;
+    }
+
+    private void HandleCardOnTable(Card playedcard, Player player)
+    {
+        HandleGameRules(playedcard);
+        cardsInTheCenter.Add(playedcard);
         playedcard.transform.position = Center.position;
+        //if it makes a match make player take cards into stash
+    }
+
+    private void HandleGameRules(Card playedcard)
+    {
+        SameNumberTakeRule snTR = new SameNumberTakeRule();
+        JTakesAll jTakesAll = new JTakesAll();
+        if (snTR.ApplyGameRule(cardsInTheCenter.LastOrDefault(), playedcard))
+        {
+            bool isPistiPosible = cardsInTheCenter.Count == 1;
+                
+            Debug.Log("Same Num Rule");
+        }
+
+        if (jTakesAll.ApplyGameRule(cardsInTheCenter.LastOrDefault(),playedcard))
+        {
+            Debug.Log("JTakesAlll");            
+        }
     }
 
     private void OnDisable()
     {
-        PlayerManager.Instance.EAPlayerPlayed -= MoveCardToTheCenter;
+        PlayerManager.Instance.EAPlayerPlayed -= HandleCardOnTable;
 
     }
 }

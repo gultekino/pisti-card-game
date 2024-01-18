@@ -33,6 +33,7 @@ public class DeckManager : MonoBehaviour
         deckBuilder = GetComponent<DeckBuilder>();
         pack = deckBuilder.BuildDeck();
         pack.Shuffle();
+        pack.MovePosition<Transform>(TableManager.Instance.GetDeckLoc().position);
     }
 
     public bool DoesPackHasCardsForAnotherRound(int playerCount, int cardsToGivePlayer)
