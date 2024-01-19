@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = System.Random;
 
@@ -7,29 +9,30 @@ public static class ListExtentions
 {
     private static Random rng = new Random();
 
-    //Fisher-Yates shuffle
-    public static void Shuffle<T>(this IList<T> list)
+    public static List<T> Shuffle<T>(this List<T> source)
     {
-        int n = list.Count;
+        List<T> shuffledList = source;
+        int n = shuffledList.Count;
         while (n > 1)
         {
             n--;
             int k = rng.Next(n + 1);
-            (list[k], list[n]) = (list[n], list[k]);
+            (shuffledList[k], shuffledList[n]) = (shuffledList[n], shuffledList[k]);
         }
+
+        return shuffledList;
     }
 
-    public static List<T> TakeRandom<T>(this IList<T> list, int num)
+    public static T TakeRandom<T>(this IEnumerable<T> source)
     {
-        List<T> randomSelected = new List<T>();
-        for (int i = 0; i < num; i++)
-        {
-            int rnd = rng.Next(0,list.Count-1);
-            randomSelected.Add(list[rnd]);
-            list.RemoveAt(rnd);
-        }
+        return source.TakeRandom(1).Single();
+    }
 
-        return randomSelected;
+    public static IEnumerable<T> TakeRandom<T>(this IEnumerable<T> source, int count, bool shuffle = false)
+    {
+        if (shuffle)
+            return source.ToList().Shuffle().Take(count); 
+        return source.Take(count);
     }
     
     public static void MovePosition<T>(this IList<Card> list, Vector3 loc)

@@ -47,26 +47,35 @@ public class TableManager : MonoBehaviour
         //if it makes a match make player take cards into stash
     }
 
-    private void HandleGameRules(Card playedcard)
+    private bool HandleGameRules(Card playedcard)
     {
         SameNumberTakeRule snTR = new SameNumberTakeRule();
         JTakesAll jTakesAll = new JTakesAll();
         if (snTR.ApplyGameRule(cardsInTheCenter.LastOrDefault(), playedcard))
         {
             bool isPistiPosible = cardsInTheCenter.Count == 1;
-                
+            if (isPistiPosible)
+                Debug.Log("Pisti");
             Debug.Log("Same Num Rule");
+            return true;
         }
 
         if (jTakesAll.ApplyGameRule(cardsInTheCenter.LastOrDefault(),playedcard))
         {
             Debug.Log("JTakesAlll");            
+            return true;
         }
+
+        return false;
+    }
+
+    public CardNum GetCarNumOnTopCard()
+    {
+        return cardsInTheCenter.LastOrDefault()!.Number;
     }
 
     private void OnDisable()
     {
         PlayerManager.Instance.EAPlayerPlayed -= HandleCardOnTable;
-
     }
 }
