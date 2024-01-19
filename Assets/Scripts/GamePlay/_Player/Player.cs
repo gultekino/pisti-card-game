@@ -9,9 +9,9 @@ using UnityEngine.Events;
 
 public class Player : MonoBehaviour
 {
-    private List<Card> cardsInHand = new List<Card>();
-    private List<Card> cardsInStash = new List<Card>();
-    private List<Slot> cardHoldingSlots;
+    protected List<Card> cardsInHand = new List<Card>();
+    protected List<Card> cardsInStash = new List<Card>();
+    protected List<Slot> cardHoldingSlots;
 
     private void Awake()
     {

@@ -10,7 +10,9 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager Instance => instance;
     private static PlayerManager instance;
 
-    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private Player playerPrefab;
+    [SerializeField] private Player aiPrefab;
+
     [SerializeField] private Transform playerContainer;
     private List<Player> players = new List<Player>();
     
@@ -47,11 +49,15 @@ public class PlayerManager : MonoBehaviour
             var playerSpawnLoc = TableManager.Instance.GetPlayerLoc(i);
             var pos = playerSpawnLoc.position;
             var rot = playerSpawnLoc.rotation;
-            var go = Instantiate(playerPrefab, pos, rot, playerContainer);
-            var playerC = go.GetComponent<Player>();
-            playerC.EPlayerPlayed += OnPlayerMadeMove;
-            players.Add(playerC);
-            
+            Player player;
+            if (i == 0)
+                player = Instantiate(playerPrefab, pos, rot, playerContainer);
+            else
+                player = Instantiate(aiPrefab, pos, rot, playerContainer);
+
+            player.EPlayerPlayed += OnPlayerMadeMove;
+            players.Add(player);
+
         }
     }
 
@@ -89,9 +95,9 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void GivePlayersCard(List<Card> cardsToPlay)
+    public void GivePlayersCard(IEnumerable<Card> cardsToPlay)
     {
-        var howManyCardsShouldEachPlayerHave = cardsToPlay.Count / players.Count;
+        var howManyCardsShouldEachPlayerHave = cardsToPlay.Count() / players.Count;
         for (int i = 0; i < players.Count; i++)
         {
             var list =cardsToPlay.Skip(i*howManyCardsShouldEachPlayerHave).Take((i+1)*howManyCardsShouldEachPlayerHave);

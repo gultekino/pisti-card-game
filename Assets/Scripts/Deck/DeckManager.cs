@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DeckManager : MonoBehaviour
@@ -48,9 +49,10 @@ public class DeckManager : MonoBehaviour
         if (pack.Count<takeRandomNum)
             takeRandomNum = pack.Count;
 
-        List<Card> cardsToPlay = pack.TakeRandom(takeRandomNum);
+        IEnumerable<Card> cardsToPlay = pack.TakeRandom(takeRandomNum);
         playedCards.AddRange(cardsToPlay);
         PlayerManager.Instance.GivePlayersCard(cardsToPlay);
+        pack.RemoveAll(l => cardsToPlay.Contains(l));
     }
 
     public void PlayerInteractedWithCard(Card card,int playerIndex)
