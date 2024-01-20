@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
+    public SortingOrder ORDER=SortingOrder.UnderCard;
     private CardNum number;
     private Shape shape;
     private SpriteRenderer spriteRenderer;
@@ -43,5 +44,12 @@ public class Card : MonoBehaviour
     {
         DeckManager.Instance.PlayerInteractedWithCard(this,a%2);
         a++;
+    }
+
+    public void UpdateVisualsSortingOrder(SortingOrder order)
+    {
+        ORDER = order;
+        GetComponentInChildren<SpriteRenderer>().sortingOrder = (int)order;
+        GetComponentInChildren<TextMeshPro>().sortingOrder = (int)order;
     }
 }

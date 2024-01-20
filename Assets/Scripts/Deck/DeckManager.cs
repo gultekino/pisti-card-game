@@ -34,6 +34,7 @@ public class DeckManager : MonoBehaviour
         deckBuilder = GetComponent<DeckBuilder>();
         pack = deckBuilder.BuildDeck();
         pack.Shuffle();
+        pack.FirstOrDefault()?.UpdateVisualsSortingOrder(SortingOrder.UpperCard);
         pack.MovePosition<Transform>(TableManager.Instance.GetDeckLoc().position);
     }
 
@@ -45,11 +46,11 @@ public class DeckManager : MonoBehaviour
 
     public void GivePlayersCard(int playerCount, int numCardsToGive)
     {
-        int takeRandomNum = numCardsToGive * playerCount;
-        if (pack.Count<takeRandomNum)
-            takeRandomNum = pack.Count;
+        int takeCardCount = numCardsToGive * playerCount;
+        if (pack.Count<takeCardCount)
+            takeCardCount = pack.Count;
 
-        IEnumerable<Card> cardsToPlay = pack.TakeRandom(takeRandomNum);
+        IEnumerable<Card> cardsToPlay = pack.TakeLast(takeCardCount);
         playedCards.AddRange(cardsToPlay);
         PlayerManager.Instance.GivePlayersCard(cardsToPlay);
         pack.RemoveAll(l => cardsToPlay.Contains(l));

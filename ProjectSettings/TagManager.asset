@@ -44,3 +44,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: UnderCard
+    uniqueID: 1419781845
+    locked: 0
+  - name: UpperCard
+    uniqueID: 2700786831
+    locked: 0

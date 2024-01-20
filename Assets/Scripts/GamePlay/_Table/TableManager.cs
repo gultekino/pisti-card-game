@@ -53,10 +53,16 @@ public class TableManager : MonoBehaviour
 
     private void HandleCardOnTable(Card playedcard, Player player)
     {
+        UpdateCardDrawingOrders(playedcard);
         playedcard.transform.position = Center.position;
         cardsInTheCenter.Add(playedcard);
         HandleGameRules(playedcard, player);
-        //if it makes a match make player take cards into stash
+    }
+
+    private void UpdateCardDrawingOrders(Card playedcard)
+    {
+        playedcard.UpdateVisualsSortingOrder(SortingOrder.UpperCard);
+        cardsInTheCenter.LastOrDefault()?.UpdateVisualsSortingOrder(SortingOrder.UnderCard);
     }
 
     private bool AfterAddedPlayedCardIsThereWasThereACardOnTop()

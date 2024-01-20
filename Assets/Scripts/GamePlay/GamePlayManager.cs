@@ -29,7 +29,6 @@ public class GamePlayManager : MonoBehaviour
          yield return PlayRounds(gamePlaySettings);
       }
       GameStateHandler.GameState = GameState.GameEnd;
-      Debug.Log("HERRRR");
    }
    
    bool CanPlayAnotherRound(GamePlaySettings settings)
