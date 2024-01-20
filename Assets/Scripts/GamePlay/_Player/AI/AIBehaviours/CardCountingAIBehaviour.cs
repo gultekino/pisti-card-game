@@ -1,16 +1,21 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CardCounterAIBehaviour : AIBehaviourBase
 {
+    public CardCounterAIBehaviour(float intelligence)
+    {
+        this.intelligence = intelligence;
+    }
+
+    private float intelligence;
     private const int CARD_COUNT = 14; //13 Cards + never used 0 index
     private int[] CardCounter = new int[CARD_COUNT];
     public override void UpdateKnowledge(CardNum newCardNum)
     {
-        CardCounter[(int)newCardNum]++;
+        if (Random.Range(0,1f)>intelligence)
+            CardCounter[(int)newCardNum]++;
     }
 
     public override Card DecideMove(CardNum cardNumOnTop, List<Card> PlayableCards)

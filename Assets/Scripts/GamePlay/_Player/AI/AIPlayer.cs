@@ -5,11 +5,16 @@ using UnityEngine;
 
 public class AIPlayer : Player
 {
-    private AIBehaviourBase aiBehaviour = new CardCounterAIBehaviour();
+    [SerializeField] [Range(0,1)]private float AIIntelligence = 0f;
+    private AIBehaviourBase aiBehaviour;
     private bool executingMove = false;
 
     private void Start()
     {
+        if (AIIntelligence<0.1f)
+            aiBehaviour = new DumbBehaviour();
+
+        aiBehaviour = new CardCounterAIBehaviour(AIIntelligence);
         PlayerManager.Instance.EAPlayerPlayed += UpdateKnowledge;
     }
 
