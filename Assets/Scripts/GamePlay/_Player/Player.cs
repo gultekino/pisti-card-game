@@ -9,18 +9,20 @@ using UnityEngine.Events;
 
 public class Player : MonoBehaviour
 {
+    public static Player playerWonTheLast;
     protected List<Card> cardsInHand = new List<Card>();
-    protected List<Card> cardsInStash = new List<Card>();
     protected List<Slot> cardHoldingSlots;
+    protected StashSlot stashSlot;
+    protected Points playerPoints = new();
+    public delegate void PlayerPlayed(Card playedCard, Player player);
+    public event PlayerPlayed EPlayerPlayed;
 
     private void Awake()
     {
         cardHoldingSlots = GetComponentsInChildren<Slot>().ToList();
+        stashSlot = GetComponentInChildren<StashSlot>();
     }
-
-    public delegate void PlayerPlayed(Card playedCard, Player player);
-
-    public event PlayerPlayed EPlayerPlayed;
+   
     public bool PermissionToPlay { get; set; }
 
     public bool CanPlayARound()
@@ -68,5 +70,37 @@ public class Player : MonoBehaviour
         {
             TakeCardToEmptySlot(cardsToPlay.ElementAt(i));
         }
+    }
+
+    public void MadeAPisti()
+    {
+        Debug.Log("Pişti");
+        playerPoints.MadePisti();
+    }
+
+    public void TakeCardsToTheStash(IEnumerable<Card> cardsInTheCenter)
+    {
+        playerWonTheLast = this;
+        stashSlot.CarryNewCards(cardsInTheCenter);
+    }
+
+    public void CalculatePoints()
+    {
+        playerPoints.CalculatePointOfCards(stashSlot.CardsInStashSlot);
+    }
+
+    public int GetPoints()
+    {
+        return playerPoints.GamePoints;
+    }
+
+    public void TakePoints(int point)
+    {
+        playerPoints.TakePoints(point);
+    }
+
+    public int GetCardCount()
+    {
+        return stashSlot.CardsInStashSlot.Count;
     }
 }

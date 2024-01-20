@@ -27,6 +27,17 @@ public class TableManager : MonoBehaviour
     private void Start()
     {
         PlayerManager.Instance.EAPlayerPlayed += HandleCardOnTable;
+        GameStateHandler.EOnGameStateChange += HandleCardOnTable;
+
+    }
+
+    private void HandleCardOnTable(GameState gameState)
+    {
+        if (Player.playerWonTheLast == null)
+            return;
+
+        if (gameState == GameState.GameEnd)
+            Player.playerWonTheLast.TakeCardsToTheStash(cardsInTheCenter);
     }
 
     public Transform GetPlayerLoc(int index)
@@ -41,28 +52,41 @@ public class TableManager : MonoBehaviour
 
     private void HandleCardOnTable(Card playedcard, Player player)
     {
-        HandleGameRules(playedcard);
-        cardsInTheCenter.Add(playedcard);
         playedcard.transform.position = Center.position;
+        cardsInTheCenter.Add(playedcard);
+        HandleGameRules(playedcard, player);
         //if it makes a match make player take cards into stash
     }
 
-    private bool HandleGameRules(Card playedcard)
+    private bool AfterAddedPlayedCardIsThereWasThereACardOnTop()
     {
+        return cardsInTheCenter.Count - 2 < 0;
+    }
+    private bool HandleGameRules(Card playedcard, Player player)
+    {
+        if (AfterAddedPlayedCardIsThereWasThereACardOnTop())
+            return false;
+        
         SameNumberTakeRule snTR = new SameNumberTakeRule();
         JTakesAll jTakesAll = new JTakesAll();
-        if (snTR.ApplyGameRule(cardsInTheCenter.LastOrDefault(), playedcard))
+            
+        var CardOnTop = cardsInTheCenter[^2];
+        if (snTR.ApplyGameRule(CardOnTop, playedcard))
         {
-            bool isPistiPosible = cardsInTheCenter.Count == 1;
-            if (isPistiPosible)
-                Debug.Log("Pisti");
-            Debug.Log("Same Num Rule");
+            bool isPistiPossible = cardsInTheCenter.Count == 2;
+            if (isPistiPossible)
+                player.MadeAPisti();
+            player.TakeCardsToTheStash(cardsInTheCenter);
+            cardsInTheCenter.Clear();
+
             return true;
         }
 
-        if (jTakesAll.ApplyGameRule(cardsInTheCenter.LastOrDefault(),playedcard))
+        if (jTakesAll.ApplyGameRule(CardOnTop,playedcard))
         {
-            Debug.Log("JTakesAlll");            
+            Debug.Log("JTakesAll");    
+            player.TakeCardsToTheStash(cardsInTheCenter);
+            cardsInTheCenter.Clear();
             return true;
         }
 
@@ -71,7 +95,8 @@ public class TableManager : MonoBehaviour
 
     public CardNum GetCarNumOnTopCard()
     {
-        return cardsInTheCenter.LastOrDefault()!.Number;
+        var c = cardsInTheCenter.LastOrDefault();
+        return c ? c.Number : CardNum.Default;
     }
 
     private void OnDisable()

@@ -3,12 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = System.Random;
+using Random = UnityEngine.Random;
 
 public static class ListExtentions
 {
-    private static Random rng = new Random();
-
     public static List<T> Shuffle<T>(this List<T> source)
     {
         List<T> shuffledList = source;
@@ -16,7 +14,7 @@ public static class ListExtentions
         while (n > 1)
         {
             n--;
-            int k = rng.Next(n + 1);
+            int k = Random.Range(0,n+1);
             (shuffledList[k], shuffledList[n]) = (shuffledList[n], shuffledList[k]);
         }
 

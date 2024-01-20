@@ -6,7 +6,8 @@ using UnityEngine;
 public class GamePlayManager : MonoBehaviour
 {
    [SerializeField] private GamePlaySettings gamePlaySettings;
-
+   private bool step;
+   
    private void Start()
    {
       PlayerManager.Instance.CreatePlayers(gamePlaySettings.PlayerCount);
@@ -14,7 +15,6 @@ public class GamePlayManager : MonoBehaviour
       PlayerManager.Instance.EAPlayerPlayed += StepInGameLoop;
    }
 
-   private bool step;
    private void StepInGameLoop(Card playedcard, Player player)
    {
       step = true;
@@ -22,24 +22,50 @@ public class GamePlayManager : MonoBehaviour
 
    private IEnumerator GameLoop()
    {
-      while (DeckManager.Instance.DoesPackHasCardsForAnotherRound
-                (gamePlaySettings.PlayerCount,gamePlaySettings.NumCardsToGive))
+      while (CanPlayAnotherRound(gamePlaySettings))
       {
-         DeckManager.Instance.GivePlayersCard(gamePlaySettings.PlayerCount, gamePlaySettings.NumCardsToGive);
-         while (PlayerManager.Instance.CanPlayersPlayAnotherRound())
-         {
-            for (int i = 0; i < gamePlaySettings.PlayerCount; i++)
-            {
-               PlayerManager.Instance.GivePlayerPermissionToPlay(i);
-               while (!step)//wait player
-               {
-                  yield return null;
-               }
+         GiveCardsToPlayers(gamePlaySettings);
 
-               step = false;
-            }
+         yield return PlayRounds(gamePlaySettings);
+      }
+      GameStateHandler.GameState = GameState.GameEnd;
+      Debug.Log("HERRRR");
+   }
+   
+   bool CanPlayAnotherRound(GamePlaySettings settings)
+   {
+      return DeckManager.Instance.DoesPackHasCardsForAnotherRound(settings.PlayerCount, settings.NumCardsToGive);
+   }
+
+   void GiveCardsToPlayers(GamePlaySettings settings)
+   {
+      DeckManager.Instance.GivePlayersCard(settings.PlayerCount, settings.NumCardsToGive);
+   }
+
+   IEnumerator PlayRounds(GamePlaySettings settings)
+   {
+      while (PlayerManager.Instance.CanPlayersPlayAnotherRound())
+      {
+         for (int i = 0; i < settings.PlayerCount; i++)
+         {
+            yield return PlaySingleRound(i);
          }
       }
-      yield return null;
+   }
+
+   IEnumerator PlaySingleRound(int playerIndex)
+   {
+      PlayerManager.Instance.GivePlayerPermissionToPlay(playerIndex);
+    
+      yield return WaitForPlayerStep();
+   }
+
+   IEnumerator WaitForPlayerStep()
+   {
+      while (!step)
+      {
+         yield return null;
+      }
+      step = false;
    }
 }

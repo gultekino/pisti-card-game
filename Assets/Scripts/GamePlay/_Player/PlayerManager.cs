@@ -12,7 +12,6 @@ public class PlayerManager : MonoBehaviour
 
     [SerializeField] private Player playerPrefab;
     [SerializeField] private Player aiPrefab;
-
     [SerializeField] private Transform playerContainer;
     private List<Player> players = new List<Player>();
     
@@ -110,5 +109,27 @@ public class PlayerManager : MonoBehaviour
     private void OnDisable()
     {
         DeckManager.Instance.EACardClicked -= PlayerClickedACard;
+    }
+
+    private void CalculatePlayerPoints()
+    {
+        GivePointsToPlayerWhoTakeMoreCards();
+        foreach (var p in players)
+        {
+            p.CalculatePoints();
+        }
+    }
+
+    private void GivePointsToPlayerWhoTakeMoreCards()
+    {
+        var p = players.OrderByDescending(x => x.GetCardCount()).First();
+        if (p!=null)
+            p.TakePoints(3);
+    }
+
+    public List<int> GetPlayerPoints()
+    {
+        CalculatePlayerPoints();
+        return players.Select(p => p.GetPoints()).ToList();
     }
 }
