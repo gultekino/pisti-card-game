@@ -10,11 +10,14 @@ public class TableManager : MonoBehaviour
     [SerializeField] private Transform Center;
     [SerializeField] private Transform DeckLoc;
     private List<Card> cardsInTheCenter = new();
+    private GameRule[] gameRules = new GameRule[] { new JTakesAll(), new SameNumberTakeRule() };
     public static TableManager Instance => instance;
     private static TableManager instance;
     
     private void Awake()
     {
+        GameStateHandler.EOnGameStateChange += HandleCardOnTable;
+
         if (instance != null)
         {
             Destroy(this);
@@ -27,8 +30,6 @@ public class TableManager : MonoBehaviour
     private void Start()
     {
         PlayerManager.Instance.EAPlayerPlayed += HandleCardOnTable;
-        GameStateHandler.EOnGameStateChange += HandleCardOnTable;
-
     }
 
     private void HandleCardOnTable(GameState gameState)
@@ -62,29 +63,32 @@ public class TableManager : MonoBehaviour
     {
         return cardsInTheCenter.Count - 2 < 0;
     }
-    private bool HandleGameRules(Card playedcard, Player player)
+    private bool HandleGameRules(Card playedCard, Player player)
     {
         if (AfterAddedPlayedCardIsThereWasThereACardOnTop())
             return false;
         
-        SameNumberTakeRule snTR = new SameNumberTakeRule();
-        JTakesAll jTakesAll = new JTakesAll();
-            
-        var CardOnTop = cardsInTheCenter[^2];
-        if (snTR.ApplyGameRule(CardOnTop, playedcard))
+        var cardOnTop = cardsInTheCenter[^2];
+        var isPistiPossible = cardsInTheCenter.Count == 2;
+        if (ApplyRule(new JTakesAll(), cardOnTop, playedCard, player))
         {
-            bool isPistiPossible = cardsInTheCenter.Count == 2;
-            if (isPistiPossible)
-                player.MadeAPisti();
-            player.TakeCardsToTheStash(cardsInTheCenter);
-            cardsInTheCenter.Clear();
-
+            Debug.Log("JTakesAll");
             return true;
         }
 
-        if (jTakesAll.ApplyGameRule(CardOnTop,playedcard))
+        if (ApplyRule(new SameNumberTakeRule(), cardOnTop, playedCard, player))
         {
-            Debug.Log("JTakesAll");    
+            CheckAndHandlePisti(player,isPistiPossible);
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool ApplyRule(GameRule rule, Card cardOnTop, Card playedCard, Player player)
+    {
+        if (rule.ApplyGameRule(cardOnTop, playedCard))
+        {
             player.TakeCardsToTheStash(cardsInTheCenter);
             cardsInTheCenter.Clear();
             return true;
@@ -92,6 +96,15 @@ public class TableManager : MonoBehaviour
 
         return false;
     }
+
+    private void CheckAndHandlePisti(Player player,bool isPistiPossible)
+    {
+        if (isPistiPossible)
+        {
+            player.MadeAPisti();
+        }
+    }
+
 
     public CardNum GetCarNumOnTopCard()
     {

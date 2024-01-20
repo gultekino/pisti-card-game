@@ -5,6 +5,7 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private GameObject gameMenu;
+    [SerializeField] private GameEndMenu endMenu;
     void Start()
     {
         GameStateHandler.EOnGameStateChange += OnGameEnd;
@@ -15,21 +16,18 @@ public class UIManager : MonoBehaviour
         if (changedState == GameState.GameEnd)
         {
             var points = PlayerManager.Instance.GetPlayerPoints();
+            endMenu.GameEndUI(points);
             gameMenu.gameObject.SetActive(true);
-            //Update texts 
-            //Show game end UI
         }
     }
 
     public void ClickedPlayAgain()
     {
         gameMenu.gameObject.SetActive(false);
-
     }
     
     public void ClickedRestart()
     {
         gameMenu.gameObject.SetActive(false);
-
     }
 }

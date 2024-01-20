@@ -125,6 +125,8 @@ public class PlayerManager : MonoBehaviour
         var p = players.OrderByDescending(x => x.GetCardCount()).First();
         if (p!=null)
             p.TakePoints(3);
+        if (p==null)
+            Debug.Log("PAT");
     }
 
     public List<int> GetPlayerPoints()
