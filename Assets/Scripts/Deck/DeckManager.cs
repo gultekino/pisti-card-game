@@ -21,12 +21,15 @@ public class DeckManager : MonoBehaviour
     private DeckBuilder deckBuilder;
     private List<Card> deck;
     private List<Card> playedCards = new ();
-
+    private ICardDistributor cardDistributor;
+    private IDeckShuffler deckShuffler;
     public event Action<Card, int> OnCardClicked;
 
     private void Awake()
     {
         InitializeSingleton();
+        cardDistributor = new CardDistributor();
+        deckShuffler = new DeckShuffler();
         InitializeDeck();
     }
 
@@ -46,14 +49,9 @@ public class DeckManager : MonoBehaviour
     {
         deckBuilder = GetComponent<DeckBuilder>();
         deck = deckBuilder.BuildDeck();
-        ShuffleDeck();
+        deckShuffler.ShuffleDeck(deck);
         SetInitialCardSortingOrder();
         MoveDeckToTable();
-    }
-
-    private void ShuffleDeck()
-    {
-        deck.Shuffle();
     }
 
     private void SetInitialCardSortingOrder()
@@ -76,11 +74,8 @@ public class DeckManager : MonoBehaviour
 
     public void DealCardsToPlayers(int playerCount, int cardsPerPlayer)
     {
-        int cardsToDeal = Mathf.Min(deck.Count, playerCount * cardsPerPlayer);
-        var cardsToDistribute = deck.TakeLast(cardsToDeal).ToList();
-
+        var cardsToDistribute = cardDistributor.DealCards(deck, playerCount, cardsPerPlayer);
         playedCards.AddRange(cardsToDistribute);
-        PlayerManager.Instance.DistributeCardsToPlayers(cardsToDistribute);
         RemoveDealtCardsFromDeck(cardsToDistribute);
     }
 
