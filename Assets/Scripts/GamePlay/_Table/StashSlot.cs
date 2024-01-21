@@ -1,5 +1,6 @@
     using System.Collections.Generic;
     using System.Linq;
+    using DG.Tweening;
     using TMPro;
     using UnityEngine;
 
@@ -9,13 +10,17 @@
         private readonly List<Card> cardsInStashSlot = new();
 
         public List<Card> CardsInStashSlot => cardsInStashSlot;
+        private float timeToTakeToSlot = 0.4f;
+        private float timeMoveToCenter = 0.3f;
+
 
         public void CarryNewCards(IEnumerable<Card> cards)
         {
             cardsInStashSlot.AddRange(cards);
             foreach (var card in cards)
             {
-                card.transform.position = transform.position;
+                DOTween.Sequence().SetDelay(timeMoveToCenter).Append(       
+                    card.transform.DOMove(transform.position, timeToTakeToSlot).Play());
             }
             if (cards.Any())
             {

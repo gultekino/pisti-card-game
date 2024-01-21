@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -14,6 +15,7 @@ public abstract class Player : MonoBehaviour
     protected StashSlot stashSlot;
     protected Points playerPoints = new();
     protected List<Card> cardsInHand = new();
+    private float timeToTakeToSlot = 0.4f;
     public bool PermissionToPlay { get; set; }
 
     public event Action<Card, Player> OnPlayerPlayed;
@@ -55,7 +57,7 @@ public abstract class Player : MonoBehaviour
     {
         var slot = cardHoldingSlots.First(s => s.IsEmpty);
         slot.CarryNewItem(card);
-        card.transform.position = slot.transform.position;
+        card.transform.DOMove(slot.transform.position,timeToTakeToSlot);
     }
 
     protected void AssignCardsToSlots(IEnumerable<Card> cardsToPlay)
