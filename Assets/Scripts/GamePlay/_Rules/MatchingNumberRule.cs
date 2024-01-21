@@ -1,6 +1,6 @@
-public class MatchingNumberRule : GameRule
+public class MatchingNumberRule : IGameRule
 {
-    public override bool Apply(Card cardOnTop, Card playedCard)
+    public bool Apply(Card cardOnTop, Card playedCard)
     {
         return cardOnTop != null && cardOnTop.Number == playedCard.Number;
     }

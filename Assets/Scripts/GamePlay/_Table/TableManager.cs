@@ -11,8 +11,7 @@ public class TableManager : MonoBehaviour
     [SerializeField] private Transform deckLocation;
 
     private List<Card> cardsInCenter = new List<Card>();
-    private GameRule[] gameRules = new GameRule[] { new JTakesAllRule(), new MatchingNumberRule() };
-
+    private GameRuleManager gameRuleManager;
     private static TableManager instance;
     public static TableManager Instance => instance ?? (instance = FindObjectOfType<TableManager>());
 
@@ -31,6 +30,7 @@ public class TableManager : MonoBehaviour
     private void Start()
     {
         PlayerManager.Instance.OnPlayerPlayed += OnPlayerPlayed;
+        gameRuleManager = new GameRuleManager();
     }
 
     private void OnGameStateChange(GameState gameState)
@@ -68,20 +68,11 @@ public class TableManager : MonoBehaviour
 
         var cardOnTop = cardsInCenter[^2];
         var isPistiPossible = cardsInCenter.Count == 2;
-
-        if (ApplyRule(new JTakesAllRule(), cardOnTop, playedCard, player) ||
-            ApplyRule(new MatchingNumberRule(), cardOnTop, playedCard, player))
-        {
-            if (isPistiPossible) player.MadeAPisti();
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool ApplyRule(GameRule rule, Card cardOnTop, Card playedCard, Player player)
-    {
-        if (!rule.Apply(cardOnTop, playedCard)) return false;
+        IGameRule appliedRule = gameRuleManager.CheckRules(cardOnTop, playedCard);
+        if (appliedRule==null)
+            return false;
+        if (isPistiPossible && appliedRule is MatchingNumberRule)
+            player.MadeAPisti();
 
         player.CollectCards(cardsInCenter);
         cardsInCenter.Clear();

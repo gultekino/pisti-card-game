@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JTakesAllRule : GameRule
+public class JTakesAllRule : IGameRule
 {
-    public override bool Apply(Card cardOnTop, Card playedCard)
+    public bool Apply(Card cardOnTop, Card playedCard)
     {
         return cardOnTop != null && playedCard.Number == CardNum.J;
     }
