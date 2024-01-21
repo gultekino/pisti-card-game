@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class CardCounterAIBehaviour : AIBehaviourBase
+public class CardCounterAIBehaviour : IAIBehaviour
 {
     private float intelligence;
     private const int CARD_COUNT = 14; // 13 Cards + never used 0 index
@@ -14,7 +14,7 @@ public class CardCounterAIBehaviour : AIBehaviourBase
         this.intelligence = intelligence;
     }
     
-    public override void UpdateKnowledge(CardNum newCardNum)
+    public void UpdateKnowledge(CardNum newCardNum)
     {
         if (Random.Range(0f, 1f) > intelligence)
         {
@@ -22,7 +22,7 @@ public class CardCounterAIBehaviour : AIBehaviourBase
         }
     }
 
-    public override Card DecideMove(CardNum cardNumOnTop, List<Card> playableCards)
+    public Card DecideMove(CardNum cardNumOnTop, List<Card> playableCards)
     {
         var sameNumCards = playableCards.Where(card => card.Number == cardNumOnTop).ToList();
         if (sameNumCards.Any())

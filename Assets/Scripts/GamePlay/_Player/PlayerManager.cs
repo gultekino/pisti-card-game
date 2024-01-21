@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance => instance;
     private static PlayerManager instance;
 
-    [SerializeField] private Player playerPrefab;
+    [SerializeField] private Player humanPlayer;
     [SerializeField] private Player aiPrefab;
     [SerializeField] private Transform playerContainer;
     private List<Player> players = new List<Player>();
@@ -50,7 +51,7 @@ public class PlayerManager : MonoBehaviour
             var rot = playerSpawnLoc.rotation;
             Player player;
             if (i == 0)
-                player = Instantiate(playerPrefab, pos, rot, playerContainer);
+                player = Instantiate(humanPlayer, pos, rot, playerContainer);
             else
                 player = Instantiate(aiPrefab, pos, rot, playerContainer);
 

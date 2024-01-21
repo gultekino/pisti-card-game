@@ -7,39 +7,34 @@ using UnityEngine.Events;
 
 [System.Serializable]
 
-public class Player : MonoBehaviour
+public abstract class Player : MonoBehaviour
 {
     public static Player playerWonTheLast;
-    protected List<Card> cardsInHand = new List<Card>();
     protected List<Slot> cardHoldingSlots;
     protected StashSlot stashSlot;
     protected Points playerPoints = new();
+    protected List<Card> cardsInHand = new List<Card>();
+    public bool PermissionToPlay { get; set; }
+
     public delegate void PlayerPlayed(Card playedCard, Player player);
     public event PlayerPlayed EPlayerPlayed;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         cardHoldingSlots = GetComponentsInChildren<Slot>().ToList();
         stashSlot = GetComponentInChildren<StashSlot>();
     }
     
-    public bool PermissionToPlay { get; set; }
 
     public bool CanPlayARound()
     {
         return cardsInHand.Count != 0;
     }
 
-    public void PlayCard(Card card)
-    {
-
-    }
-
-
-    public void TakeCards(IEnumerable<Card> cardsToPlay)
+    public virtual void TakeCards(IEnumerable<Card> cardsToPlay)
     {
         cardsInHand.AddRange(cardsToPlay);
-        TakeCardsToEmptySlots(cardsToPlay);
+        AssignCardsToSlots(cardsToPlay);
     }
 
     public void TryPlayCard(Card playedCard)
@@ -64,7 +59,7 @@ public class Player : MonoBehaviour
         card.transform.position = slot.transform.position;
     }
 
-    private void TakeCardsToEmptySlots(IEnumerable<Card> cardsToPlay)
+    protected void AssignCardsToSlots(IEnumerable<Card> cardsToPlay)
     {
         for (int i = 0; i < cardsToPlay.Count(); i++)
         {

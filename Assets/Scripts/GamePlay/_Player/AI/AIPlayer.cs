@@ -6,7 +6,7 @@ using UnityEngine;
 public class AIPlayer : Player
 {
     [SerializeField] [Range(0,1)]private float AIIntelligence = 0f;
-    private AIBehaviourBase aiBehaviour;
+    private IAIBehaviour aiBehaviour;
     private bool isExecutingMove = false;
    
 
