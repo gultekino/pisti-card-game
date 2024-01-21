@@ -1,0 +1,122 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5298300980007779929
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7813970450506762462}
+  m_Layer: 0
+  m_Name: CardContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7813970450506762462
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5298300980007779929}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3327822736241028991}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6701117524416034358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3327822736241028991}
+  - component: {fileID: 67700265350599910}
+  - component: {fileID: 248750535553535181}
+  m_Layer: 0
+  m_Name: DeckManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3327822736241028991
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6701117524416034358}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7813970450506762462}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &67700265350599910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6701117524416034358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 139e9f8de88b84f78869d66ad13e3ce2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &248750535553535181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6701117524416034358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0c4708bd942949ea87a9696e6af9fe9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CardPrefab: {fileID: 1159154487039720770, guid: 1e47dbae97f454b7e8f66568e31b9ddc, type: 3}
+  CardContainer: {fileID: 7813970450506762462}
+  suits:
+  - shape: 1
+    color: 1
+    defaultSprite: {fileID: 21300000, guid: f3f04ee2e47874326b4f5c860eecadcd, type: 3}
+    imageSprites:
+    - {fileID: 21300000, guid: 863f6d32e937c40c4be442c7c250ff9b, type: 3}
+    - {fileID: 21300000, guid: 0460e2da2024f45afad7522bc847651f, type: 3}
+    - {fileID: 21300000, guid: 07e7df6769ca3488290f78ed9630bfdd, type: 3}
+  - shape: 2
+    color: 1
+    defaultSprite: {fileID: 21300000, guid: 3b3a4be32c12c4d89b7765e0bdcff80f, type: 3}
+    imageSprites:
+    - {fileID: 21300000, guid: 99196cab8c54142dd846f96cbc786625, type: 3}
+    - {fileID: 21300000, guid: 594689148356d4b7baadd950ff050322, type: 3}
+    - {fileID: 21300000, guid: 923ca38f1991948dc90b0cb85353db1f, type: 3}
+  - shape: 3
+    color: 2
+    defaultSprite: {fileID: 21300000, guid: 32562c137d6f44f66b0710ba66567b3f, type: 3}
+    imageSprites:
+    - {fileID: 21300000, guid: 32de7f88c1f7e488993fcafe1855286f, type: 3}
+    - {fileID: 21300000, guid: 1771c01976cea48238ac41c4334f5e3d, type: 3}
+    - {fileID: 21300000, guid: 1232425bcd43e4c0d8fbd27e4a577bf7, type: 3}
+  - shape: 4
+    color: 2
+    defaultSprite: {fileID: 21300000, guid: 08f29d860fea44a0492682c266077017, type: 3}
+    imageSprites:
+    - {fileID: 21300000, guid: a0e2f3a619f7748a7845d93ca792de53, type: 3}
+    - {fileID: 21300000, guid: d7643f9c4e9454192b6ab3e5bcda7db4, type: 3}
+    - {fileID: 21300000, guid: 9d70f8dcbcbc0434694308085b666a1d, type: 3}
