@@ -306,13 +306,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abdc7456d5fb4484a92c0d6b6952de2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerLocationsOnTable:
-  - {fileID: 1058101998}
-  - {fileID: 567025310}
-  - {fileID: 219303803}
-  - {fileID: 568623660}
-  centerTransform: {fileID: 390092090}
-  deckLocation: {fileID: 924781314}
+  tableLocationHandler:
+    playerLocationsOnTable:
+    - {fileID: 1058101998}
+    - {fileID: 567025310}
+    - {fileID: 219303803}
+    - {fileID: 568623660}
+    deckLocation: {fileID: 924781314}
+    centerLocation: {fileID: 390092090}
 --- !u!4 &554802840
 Transform:
   m_ObjectHideFlags: 0

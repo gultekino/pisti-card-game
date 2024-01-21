@@ -1,17 +1,13 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class TableManager : MonoBehaviour
 {
-    [SerializeField] private Transform[] playerLocationsOnTable;
-    [SerializeField] private Transform centerTransform;
-    [SerializeField] private Transform deckLocation;
+    [SerializeField] private TableLocationHandler tableLocationHandler;
+    private CardInteractionHandler cardInteractionHandler;
 
     private List<Card> cardsInCenter = new List<Card>();
-    private GameRuleManager gameRuleManager;
     private static TableManager instance;
     public static TableManager Instance => instance ?? (instance = FindObjectOfType<TableManager>());
 
@@ -30,7 +26,7 @@ public class TableManager : MonoBehaviour
     private void Start()
     {
         PlayerManager.Instance.OnPlayerPlayed += OnPlayerPlayed;
-        gameRuleManager = new GameRuleManager();
+        cardInteractionHandler = new CardInteractionHandler();
     }
 
     private void OnGameStateChange(GameState gameState)
@@ -41,34 +37,27 @@ public class TableManager : MonoBehaviour
         Player.playerWonTheLast.CollectCards(cardsInCenter);
     }
 
-    public Transform GetPlayerLocation(int index) => playerLocationsOnTable[index];
+    public Transform GetPlayerLocation(int index) => tableLocationHandler.GetPlayerLocation(index);
 
-    public Transform DeckLocation => deckLocation;
+    public Transform DeckLocation => tableLocationHandler.GetDeckLocation();
 
     private void OnPlayerPlayed(Card playedCard, Player player)
     {
-        playedCard.transform.position = centerTransform.position;
+        playedCard.transform.position = tableLocationHandler.GetCenterLocation().position;
+        var cardOnTop = GetCardOnTop();
+        cardInteractionHandler.UpdateCardDrawingOrder(playedCard,cardOnTop);
         cardsInCenter.Add(playedCard);
-        UpdateCardDrawingOrder(playedCard);
-        ProcessGameRules(playedCard, player);
+        ProcessGameRules(playedCard, player,cardOnTop);
     }
+    
 
-    private void UpdateCardDrawingOrder(Card playedCard)
-    {
-        playedCard.UpdateVisualSortingOrder(SortingOrder.UpperCard);
-        if (cardsInCenter.Count > 1)
-        {
-            cardsInCenter[^2].UpdateVisualSortingOrder(SortingOrder.UnderCard);
-        }
-    }
-
-    private bool ProcessGameRules(Card playedCard, Player player)
+    private bool ProcessGameRules(Card playedCard, Player player, Card cardOnTop)
     {
         if (cardsInCenter.Count < 2) return false;
 
-        var cardOnTop = cardsInCenter[^2];
         var isPistiPossible = cardsInCenter.Count == 2;
-        IGameRule appliedRule = gameRuleManager.CheckRules(cardOnTop, playedCard);
+        
+        var appliedRule = cardInteractionHandler.HandleCardPlayed(playedCard,cardOnTop);
         if (appliedRule==null)
             return false;
         if (isPistiPossible && appliedRule is MatchingNumberRule)
@@ -79,6 +68,10 @@ public class TableManager : MonoBehaviour
         return true;
     }
 
+    private Card GetCardOnTop()
+    {
+        return cardsInCenter.LastOrDefault();
+    }
     public CardNum TopCardNumber => cardsInCenter.LastOrDefault()?.Number ?? CardNum.Default;
 
     private void OnDisable()
