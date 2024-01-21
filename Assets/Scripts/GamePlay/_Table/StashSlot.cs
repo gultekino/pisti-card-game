@@ -10,14 +10,17 @@
         private readonly List<Card> cardsInStashSlot = new();
 
         public List<Card> CardsInStashSlot => cardsInStashSlot;
+        private float timeToTakeToSlot = 0.4f;
+        private float timeMoveToCenter = 0.3f;
+
 
         public void CarryNewCards(IEnumerable<Card> cards)
         {
             cardsInStashSlot.AddRange(cards);
             foreach (var card in cards)
             {
-                DOTween.Sequence().SetDelay(0.3f).Append(       
-                    card.transform.DOMove(transform.position, 0.3f).Play());
+                DOTween.Sequence().SetDelay(timeMoveToCenter).Append(       
+                    card.transform.DOMove(transform.position, timeToTakeToSlot).Play());
             }
             if (cards.Any())
             {

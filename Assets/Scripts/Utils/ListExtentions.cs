@@ -8,6 +8,7 @@ using Random = UnityEngine.Random;
 
 public static class ListExtentions
 {
+    private static float timeMoveCard = 0.4f;
     public static List<T> Shuffle<T>(this List<T> source)
     {
         List<T> shuffledList = source;
@@ -37,6 +38,6 @@ public static class ListExtentions
     public static void MovePosition<T>(this IList<Card> list, Vector3 loc)
     {
         foreach (var e in list)
-            e.transform.DOMove(loc,0.3f);
+            e.transform.DOMove(loc,timeMoveCard);
     }
 }
