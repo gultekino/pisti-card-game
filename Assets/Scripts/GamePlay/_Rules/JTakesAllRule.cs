@@ -2,11 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JTakesAll : GameRule
+public class JTakesAllRule : IGameRule
 {
-    public override bool ApplyGameRule(Card cardOnTop, Card playedCard, bool pistiPosible = false)
+    public bool Apply(Card cardOnTop, Card playedCard)
     {
-        return cardOnTop != null 
-               && playedCard.Number == CardNum.J;
+        return cardOnTop != null && playedCard.Number == CardNum.J;
     }
 }

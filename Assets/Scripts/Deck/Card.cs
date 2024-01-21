@@ -3,45 +3,69 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Card : MonoBehaviour
 {
-    private CardNum number;
-    private Shape shape;
-    private SpriteRenderer spriteRenderer;
-    private TMP_Text tmpText;
-    
-    public CardNum Number => number;
-
-    public Shape Shape => shape;
-
+    public SortingOrder Order { get; private set; } = SortingOrder.UnderCard;
+    public CardNum Number { get; private set; }
+    public Shape Shape { get; private set; }
     public int Points { get; set; }
-
     public CardColor Color { get; private set; }
     
-    
+    private SpriteRenderer spriteRenderer;
+    private TMP_Text tmpText;
+    private TextMeshPro tmProText;
 
     private void Awake()
     {
+        InitializeComponents();
+    }
+    
+    private void OnMouseUp()
+    {
+        DeckManager.Instance.PlayerInteractedWithCard(this,PlayerManager.Instance.GetPlayerIndex());
+    }
+    private void InitializeComponents()
+    {
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         tmpText = GetComponentInChildren<TMP_Text>();
+        tmProText = GetComponentInChildren<TextMeshPro>();
     }
-
-    public void CardInit(int value, Shape shape, CardColor color, Sprite visual, string text)
+    public void InitializeCard(int value, Shape shape, CardColor color, Sprite visual, string text)
     {
-        this.number = (CardNum) value;
-        this.shape = shape;
-        this.Points = Points;
-        this.Color = color;
-        
+        AssignCardAttributes(value, shape, color);
+        UpdateVisuals(visual, text);
+    }
+    private void AssignCardAttributes(int value, Shape shape, CardColor color)
+    {
+        Number = (CardNum)value;
+        Shape = shape;
+        Color = color;
+    }
+    
+    private void UpdateVisuals(Sprite visual, string text)
+    {
         spriteRenderer.sprite = visual;
         tmpText.SetText(text);
     }
-
-    private int a = 0;
-    private void OnMouseUp()
+    
+    public void UpdateVisualSortingOrder(SortingOrder order)
     {
-        DeckManager.Instance.PlayerInteractedWithCard(this,a%2);
-        a++;
+        Order = order;
+        UpdateSortingOrder(spriteRenderer, order);
+        UpdateSortingOrder(tmProText, order);
+    }
+    
+    private void UpdateSortingOrder(Renderer renderer, SortingOrder order)
+    {
+        if (renderer != null)
+            renderer.sortingOrder = (int)order;
+    }
+    
+    private void UpdateSortingOrder(TextMeshPro tmPro, SortingOrder order)
+    {
+        if (tmPro != null)
+            tmPro.sortingOrder = (int)order;
     }
 }

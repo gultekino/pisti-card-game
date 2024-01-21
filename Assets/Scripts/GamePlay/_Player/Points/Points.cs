@@ -9,7 +9,7 @@ public class Points
     private int pistiCount;
     public int GamePoints => points;
 
-    public int CalculatePointOfCards(List<Card> cards)
+    public int CalculateTotalPoints(List<Card> cards)
     {
         int total = cards.Sum(c => c.Points);
         points += (total+10*pistiCount);
@@ -21,8 +21,14 @@ public class Points
         pistiCount++;
     }
 
-    public void TakePoints(int point)
+    public void AddDirectPoints(int point)
     {
         points += point;
+    }
+
+    public void ResetPoints()
+    {
+        pistiCount = 0;
+        points = 0;
     }
 }

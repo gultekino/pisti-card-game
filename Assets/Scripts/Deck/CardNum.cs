@@ -11,7 +11,7 @@ public enum CardNum
     Eight,
     Nine,
     Ten,
-    J,
-    Q,
-    K
+    J, //JACK
+    Q, //QUEEN
+    K  //KING
 }

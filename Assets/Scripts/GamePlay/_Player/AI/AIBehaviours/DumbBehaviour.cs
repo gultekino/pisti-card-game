@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class DumbBehaviour : AIBehaviourBase
+public class DumbBehaviour : IAIBehaviour
 {
-    public override Card DecideMove(CardNum cardNumOnTop, List<Card> PlayableCards)
+    public Card DecideMove(CardNum cardNumOnTop, List<Card> PlayableCards)
     {
-        return PlayableCards.TakeRandom();
+       return PlayableCards.TakeRandom();
+    }
+
+    public void UpdateKnowledge(CardNum newCardNum)
+    {
     }
 }
+
+

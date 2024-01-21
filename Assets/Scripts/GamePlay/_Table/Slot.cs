@@ -4,30 +4,25 @@ using UnityEngine;
 
 public class Slot : MonoBehaviour
 {
-    private bool isEmpty = true;
     private Card carrying;
-
+    public bool IsEmpty { get; private set; } = true;
     public Card Carrying
     {
         get => carrying;
-        set => carrying = value;
-    }
-
-    public bool IsEmpty
-    {
-        get => isEmpty;
-        set => isEmpty = value;
+        private set
+        {
+            carrying = value;
+            IsEmpty = carrying == null;
+        }
     }
 
     public void CarryNewItem(Card card)
     {
-        isEmpty = false;
-        carrying = card;
+        Carrying = card;
     }
 
     public void EmptySlot()
     {
-        carrying = null;
-        isEmpty = true;
+        Carrying = null;
     }
 }

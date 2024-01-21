@@ -4,57 +4,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : Singleton<PlayerManager>
 {
-    public static PlayerManager Instance => instance;
-    private static PlayerManager instance;
-
-    [SerializeField] private Player playerPrefab;
+    [SerializeField] private Player humanPlayer;
     [SerializeField] private Player aiPrefab;
     [SerializeField] private Transform playerContainer;
-    private List<Player> players = new List<Player>();
-    
-    public delegate void PlayerPlayed(Card playedCard,Player player);
-    public event PlayerPlayed EAPlayerPlayed;
-    
-    public delegate void PlayerTookCards(Card[] playedCard,int playerIndex);
-    public event PlayerTookCards EPlayerTookCards;
-    private void Awake()
-    {
-        if (instance != null)
-        {
-            Destroy(this);
-            return;
-        }
-
-        instance = this;
-    }
+    private List<Player> players = new();
+    public event Action<Card, Player> OnPlayerPlayed;
 
     private void Start()
     {
-        DeckManager.Instance.EACardClicked += PlayerClickedACard;
+        DeckManager.Instance.OnCardClicked += PlayerClickedACard;
     }
 
     private void PlayerClickedACard(Card playedCard, int playerIndex)
     {
-        players[playerIndex].TryPlay(playedCard);
+        players[playerIndex].TryPlayCard(playedCard);
     }
 
     public void CreatePlayers(int playerCount)
     {
         for (int i = 0; i < playerCount; i++)
         {
-            var playerSpawnLoc = TableManager.Instance.GetPlayerLoc(i);
+            var playerSpawnLoc = TableManager.Instance.GetPlayerLocation(i);
             var pos = playerSpawnLoc.position;
             var rot = playerSpawnLoc.rotation;
             Player player;
             if (i == 0)
-                player = Instantiate(playerPrefab, pos, rot, playerContainer);
+                player = Instantiate(humanPlayer, pos, rot, playerContainer);
             else
                 player = Instantiate(aiPrefab, pos, rot, playerContainer);
 
-            player.EPlayerPlayed += OnPlayerMadeMove;
+            player.OnPlayerPlayed += OnPlayerMadeMove;
             players.Add(player);
 
         }
@@ -63,7 +46,7 @@ public class PlayerManager : MonoBehaviour
     public void OnPlayerMadeMove(Card playedCard,Player player)
     {
         player.PermissionToPlay = false;
-        EAPlayerPlayed?.Invoke(playedCard,player);
+        OnPlayerPlayed?.Invoke(playedCard,player);
     }
 
     public void TakePlayerPermissionToPlay(int playerIndex)
@@ -86,15 +69,7 @@ public class PlayerManager : MonoBehaviour
         return true;
     }
 
-    private void OnDestroy()
-    {
-        for (int i = 0; i < players.Count; i++)
-        {
-            players[i].EPlayerPlayed -= OnPlayerMadeMove;
-        }
-    }
-
-    public void GivePlayersCard(IEnumerable<Card> cardsToPlay)
+    public void DistributeCardsToPlayers(IEnumerable<Card> cardsToPlay)
     {
         var howManyCardsShouldEachPlayerHave = cardsToPlay.Count() / players.Count;
         for (int i = 0; i < players.Count; i++)
@@ -102,13 +77,15 @@ public class PlayerManager : MonoBehaviour
             var list =cardsToPlay.Skip(i*howManyCardsShouldEachPlayerHave).Take((i+1)*howManyCardsShouldEachPlayerHave);
             var playedCard = list as Card[] ?? list.ToArray();
             players[i].TakeCards(playedCard);
-            EPlayerTookCards?.Invoke(playedCard,i);
         }
     }
 
     private void OnDisable()
     {
-        DeckManager.Instance.EACardClicked -= PlayerClickedACard;
+        DeckManager.Instance.OnCardClicked -= PlayerClickedACard;
+        foreach (var p in players)
+            p.OnPlayerPlayed -= OnPlayerMadeMove;
+        DeckManager.Instance.OnCardClicked -= PlayerClickedACard;
     }
 
     private void CalculatePlayerPoints()
@@ -133,5 +110,18 @@ public class PlayerManager : MonoBehaviour
     {
         CalculatePlayerPoints();
         return players.Select(p => p.GetPoints()).ToList();
+    }
+
+    public int GetPlayerIndex()
+    {
+        return 0;
+    }
+
+    public void ResetPlayerScores()
+    {
+        foreach (var p in players)
+        {
+            p.ResetScore();
+        }
     }
 }

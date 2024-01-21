@@ -1,119 +1,73 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TableManager : MonoBehaviour
+public class TableManager : Singleton<TableManager>
 {
-    [SerializeField] private Transform[] playerLocationsOnTable;
-    [SerializeField] private Transform Center;
-    [SerializeField] private Transform DeckLoc;
-    private List<Card> cardsInTheCenter = new();
-    private GameRule[] gameRules = new GameRule[] { new JTakesAll(), new SameNumberTakeRule() };
-    public static TableManager Instance => instance;
-    private static TableManager instance;
-    
-    private void Awake()
+    [SerializeField] private TableLocationHandler tableLocationHandler;
+    private CardInteractionHandler cardInteractionHandler;
+    private List<Card> cardsInCenter = new();
+
+    protected override void Awake()
     {
-        GameStateHandler.EOnGameStateChange += HandleCardOnTable;
-
-        if (instance != null)
-        {
-            Destroy(this);
-            return;
-        }
-
-        instance = this;
+        base.Awake();
+        GameStateHandler.OnGameStateChange += OnGameStateChange;
     }
 
     private void Start()
     {
-        PlayerManager.Instance.EAPlayerPlayed += HandleCardOnTable;
+        PlayerManager.Instance.OnPlayerPlayed += OnPlayerPlayed;
+        cardInteractionHandler = new CardInteractionHandler();
     }
 
-    private void HandleCardOnTable(GameState gameState)
+    private void OnGameStateChange(GameState gameState)
     {
-        if (Player.playerWonTheLast == null)
+        if (Player.playerWonTheLast == null || gameState != GameState.GameEnd)
             return;
 
-        if (gameState == GameState.GameEnd)
-            Player.playerWonTheLast.TakeCardsToTheStash(cardsInTheCenter);
+        Player.playerWonTheLast.CollectCards(cardsInCenter);
     }
 
-    public Transform GetPlayerLoc(int index)
-    {
-        return playerLocationsOnTable[index];
-    }
+    public Transform GetPlayerLocation(int index) => tableLocationHandler.GetPlayerLocation(index);
 
-    public Transform GetDeckLoc()
-    {
-        return DeckLoc;
-    }
+    public Transform DeckLocation => tableLocationHandler.GetDeckLocation();
 
-    private void HandleCardOnTable(Card playedcard, Player player)
+    private void OnPlayerPlayed(Card playedCard, Player player)
     {
-        playedcard.transform.position = Center.position;
-        cardsInTheCenter.Add(playedcard);
-        HandleGameRules(playedcard, player);
-        //if it makes a match make player take cards into stash
+        playedCard.transform.position = tableLocationHandler.GetCenterLocation().position;
+        var cardOnTop = GetCardOnTop();
+        cardInteractionHandler.UpdateCardDrawingOrder(playedCard,cardOnTop);
+        cardsInCenter.Add(playedCard);
+        ProcessGameRules(playedCard, player,cardOnTop);
     }
+    
 
-    private bool AfterAddedPlayedCardIsThereWasThereACardOnTop()
+    private bool ProcessGameRules(Card playedCard, Player player, Card cardOnTop)
     {
-        return cardsInTheCenter.Count - 2 < 0;
-    }
-    private bool HandleGameRules(Card playedCard, Player player)
-    {
-        if (AfterAddedPlayedCardIsThereWasThereACardOnTop())
-            return false;
+        if (cardsInCenter.Count < 2) return false;
+
+        var isPistiPossible = cardsInCenter.Count == 2;
         
-        var cardOnTop = cardsInTheCenter[^2];
-        var isPistiPossible = cardsInTheCenter.Count == 2;
-        if (ApplyRule(new JTakesAll(), cardOnTop, playedCard, player))
-        {
-            Debug.Log("JTakesAll");
-            return true;
-        }
-
-        if (ApplyRule(new SameNumberTakeRule(), cardOnTop, playedCard, player))
-        {
-            CheckAndHandlePisti(player,isPistiPossible);
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool ApplyRule(GameRule rule, Card cardOnTop, Card playedCard, Player player)
-    {
-        if (rule.ApplyGameRule(cardOnTop, playedCard))
-        {
-            player.TakeCardsToTheStash(cardsInTheCenter);
-            cardsInTheCenter.Clear();
-            return true;
-        }
-
-        return false;
-    }
-
-    private void CheckAndHandlePisti(Player player,bool isPistiPossible)
-    {
-        if (isPistiPossible)
-        {
+        var appliedRule = cardInteractionHandler.HandleCardPlayed(playedCard,cardOnTop);
+        if (appliedRule==null)
+            return false;
+        if (isPistiPossible && appliedRule is MatchingNumberRule)
             player.MadeAPisti();
-        }
+
+        player.CollectCards(cardsInCenter);
+        cardsInCenter.Clear();
+        return true;
     }
 
-
-    public CardNum GetCarNumOnTopCard()
+    private Card GetCardOnTop()
     {
-        var c = cardsInTheCenter.LastOrDefault();
-        return c ? c.Number : CardNum.Default;
+        return cardsInCenter.LastOrDefault();
     }
+    public CardNum TopCardNumber => cardsInCenter.LastOrDefault()?.Number ?? CardNum.Default;
 
     private void OnDisable()
     {
-        PlayerManager.Instance.EAPlayerPlayed -= HandleCardOnTable;
+        PlayerManager.Instance.OnPlayerPlayed -= OnPlayerPlayed;
+        GameStateHandler.OnGameStateChange -= OnGameStateChange;
     }
 }

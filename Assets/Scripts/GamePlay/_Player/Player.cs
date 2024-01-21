@@ -7,46 +7,40 @@ using UnityEngine.Events;
 
 [System.Serializable]
 
-public class Player : MonoBehaviour
+public abstract class Player : MonoBehaviour
 {
     public static Player playerWonTheLast;
-    protected List<Card> cardsInHand = new List<Card>();
     protected List<Slot> cardHoldingSlots;
     protected StashSlot stashSlot;
     protected Points playerPoints = new();
-    public delegate void PlayerPlayed(Card playedCard, Player player);
-    public event PlayerPlayed EPlayerPlayed;
+    protected List<Card> cardsInHand = new();
+    public bool PermissionToPlay { get; set; }
 
-    private void Awake()
+    public event Action<Card, Player> OnPlayerPlayed;
+    
+    protected virtual void Awake()
     {
         cardHoldingSlots = GetComponentsInChildren<Slot>().ToList();
         stashSlot = GetComponentInChildren<StashSlot>();
     }
-   
-    public bool PermissionToPlay { get; set; }
+    
 
     public bool CanPlayARound()
     {
         return cardsInHand.Count != 0;
     }
 
-    public void PlayCard(Card card)
-    {
-
-    }
-
-
-    public void TakeCards(IEnumerable<Card> cardsToPlay)
+    public virtual void TakeCards(IEnumerable<Card> cardsToPlay)
     {
         cardsInHand.AddRange(cardsToPlay);
-        TakeCardsToEmptySlots(cardsToPlay);
+        AssignCardsToSlots(cardsToPlay);
     }
 
-    public void TryPlay(Card playedCard)
+    public void TryPlayCard(Card playedCard)
     {
         if (cardsInHand.Contains(playedCard) && PermissionToPlay)
         {
-            EPlayerPlayed?.Invoke(playedCard, this);
+            OnPlayerPlayed?.Invoke(playedCard, this);
             EmptyPlayedCardSlot(playedCard);
             cardsInHand.Remove(playedCard);
         }
@@ -64,7 +58,7 @@ public class Player : MonoBehaviour
         card.transform.position = slot.transform.position;
     }
 
-    private void TakeCardsToEmptySlots(IEnumerable<Card> cardsToPlay)
+    protected void AssignCardsToSlots(IEnumerable<Card> cardsToPlay)
     {
         for (int i = 0; i < cardsToPlay.Count(); i++)
         {
@@ -78,7 +72,7 @@ public class Player : MonoBehaviour
         playerPoints.MadePisti();
     }
 
-    public void TakeCardsToTheStash(IEnumerable<Card> cardsInTheCenter)
+    public void CollectCards(IEnumerable<Card> cardsInTheCenter)
     {
         playerWonTheLast = this;
         stashSlot.CarryNewCards(cardsInTheCenter);
@@ -86,7 +80,7 @@ public class Player : MonoBehaviour
 
     public void CalculatePoints()
     {
-        playerPoints.CalculatePointOfCards(stashSlot.CardsInStashSlot);
+        playerPoints.CalculateTotalPoints(stashSlot.CardsInStashSlot);
     }
 
     public int GetPoints()
@@ -96,11 +90,16 @@ public class Player : MonoBehaviour
 
     public void TakePoints(int point)
     {
-        playerPoints.TakePoints(point);
+        playerPoints.AddDirectPoints(point);
     }
 
     public int GetCardCount()
     {
         return stashSlot.CardsInStashSlot.Count;
+    }
+
+    public void ResetScore()
+    {
+        playerPoints.ResetPoints();
     }
 }
