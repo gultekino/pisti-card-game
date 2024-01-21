@@ -30,7 +30,6 @@ public class DeckManager : MonoBehaviour
         InitializeSingleton();
         cardDistributor = new CardDistributor();
         deckShuffler = new DeckShuffler();
-        InitializeDeck();
     }
 
     private void InitializeSingleton()
@@ -45,7 +44,7 @@ public class DeckManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    private void InitializeDeck()
+    public void InitializeDeck()
     {
         deckBuilder = GetComponent<DeckBuilder>();
         deck = deckBuilder.BuildDeck();
@@ -72,7 +71,7 @@ public class DeckManager : MonoBehaviour
         return deck.Count >= requiredCards;
     }
 
-    public void DealCardsToPlayers(int playerCount, int cardsPerPlayer)
+    public void DealCards(int playerCount, int cardsPerPlayer)
     {
         var cardsToDistribute = cardDistributor.DealCards(deck, playerCount, cardsPerPlayer);
         playedCards.AddRange(cardsToDistribute);
