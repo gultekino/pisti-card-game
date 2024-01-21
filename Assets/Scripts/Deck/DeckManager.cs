@@ -1,63 +1,96 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class DeckManager : MonoBehaviour
 {
-    public static DeckManager Instance => instance;
     private static DeckManager instance;
-    
+    public static DeckManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<DeckManager>();
+            }
+            return instance;
+        }
+    }
+
     private DeckBuilder deckBuilder;
-    private List<Card> pack;
-    private List<Card> playedCards = new List<Card>();
-    
-    public delegate void CardClicked(Card playedCard, int playerIndex);
-    public event CardClicked EACardClicked;
+    private List<Card> deck;
+    private List<Card> playedCards = new ();
+
+    public event Action<Card, int> OnCardClicked;
 
     private void Awake()
     {
-        if (instance != null)
+        InitializeSingleton();
+        InitializeDeck();
+    }
+
+    private void InitializeSingleton()
+    {
+        if (instance != null && instance != this)
         {
-            Destroy(this);
+            Destroy(gameObject);
             return;
         }
 
         instance = this;
-
-        BuildPack();
+        DontDestroyOnLoad(this);
     }
 
-    private void BuildPack()
+    private void InitializeDeck()
     {
         deckBuilder = GetComponent<DeckBuilder>();
-        pack = deckBuilder.BuildDeck();
-        pack.Shuffle();
-        pack.FirstOrDefault()?.UpdateVisualsSortingOrder(SortingOrder.UpperCard);
-        pack.MovePosition<Transform>(TableManager.Instance.GetDeckLoc().position);
+        deck = deckBuilder.BuildDeck();
+        ShuffleDeck();
+        SetInitialCardSortingOrder();
+        MoveDeckToTable();
     }
 
-    public bool DoesPackHasCardsForAnotherRound(int playerCount, int cardsToGivePlayer)
+    private void ShuffleDeck()
     {
-        return pack.Count > 0;
-        // return pack.Count > (playerCount * cardsToGivePlayer);
+        deck.Shuffle();
     }
 
-    public void GivePlayersCard(int playerCount, int numCardsToGive)
+    private void SetInitialCardSortingOrder()
     {
-        int takeCardCount = numCardsToGive * playerCount;
-        if (pack.Count<takeCardCount)
-            takeCardCount = pack.Count;
-
-        IEnumerable<Card> cardsToPlay = pack.TakeLast(takeCardCount);
-        playedCards.AddRange(cardsToPlay);
-        PlayerManager.Instance.GivePlayersCard(cardsToPlay);
-        pack.RemoveAll(l => cardsToPlay.Contains(l));
+        deck.FirstOrDefault()?.UpdateVisualsSortingOrder(SortingOrder.UpperCard);
     }
 
-    public void PlayerInteractedWithCard(Card card,int playerIndex)
+    private void MoveDeckToTable()
     {
-        EACardClicked?.Invoke(card,playerIndex);
+        deck.MovePosition<Transform>(TableManager.Instance.GetDeckLoc().position);
+    }
+
+    public bool CanDealAnotherRound(int playerCount, int cardsPerPlayer, bool playUntilNoCardLeft)
+    {
+        if (playUntilNoCardLeft)
+            return deck.Count != 0;
+        int requiredCards = playerCount * cardsPerPlayer;
+        return deck.Count >= requiredCards;
+    }
+
+    public void DealCardsToPlayers(int playerCount, int cardsPerPlayer)
+    {
+        int cardsToDeal = Mathf.Min(deck.Count, playerCount * cardsPerPlayer);
+        var cardsToDistribute = deck.TakeLast(cardsToDeal).ToList();
+
+        playedCards.AddRange(cardsToDistribute);
+        PlayerManager.Instance.DistributeCardsToPlayers(cardsToDistribute);
+        RemoveDealtCardsFromDeck(cardsToDistribute);
+    }
+
+    private void RemoveDealtCardsFromDeck(IEnumerable<Card> dealtCards)
+    {
+        deck.RemoveAll(card => dealtCards.Contains(card));
+    }
+
+    public void PlayerInteractedWithCard(Card card, int playerIndex)
+    {
+        OnCardClicked?.Invoke(card, playerIndex);
     }
 }

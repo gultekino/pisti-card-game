@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
         cardHoldingSlots = GetComponentsInChildren<Slot>().ToList();
         stashSlot = GetComponentInChildren<StashSlot>();
     }
-   
+    
     public bool PermissionToPlay { get; set; }
 
     public bool CanPlayARound()
@@ -42,7 +42,7 @@ public class Player : MonoBehaviour
         TakeCardsToEmptySlots(cardsToPlay);
     }
 
-    public void TryPlay(Card playedCard)
+    public void TryPlayCard(Card playedCard)
     {
         if (cardsInHand.Contains(playedCard) && PermissionToPlay)
         {
@@ -86,7 +86,7 @@ public class Player : MonoBehaviour
 
     public void CalculatePoints()
     {
-        playerPoints.CalculatePointOfCards(stashSlot.CardsInStashSlot);
+        playerPoints.CalculateTotalPoints(stashSlot.CardsInStashSlot);
     }
 
     public int GetPoints()
@@ -96,11 +96,16 @@ public class Player : MonoBehaviour
 
     public void TakePoints(int point)
     {
-        playerPoints.TakePoints(point);
+        playerPoints.AddDirectPoints(point);
     }
 
     public int GetCardCount()
     {
         return stashSlot.CardsInStashSlot.Count;
+    }
+
+    public void ResetScore()
+    {
+        playerPoints.ResetPoints();
     }
 }

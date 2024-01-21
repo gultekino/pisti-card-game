@@ -22,6 +22,7 @@ public class GamePlayManager : MonoBehaviour
 
    private IEnumerator GameLoop()
    {
+      GameStateHandler.GameState = GameState.InGame;
       while (CanPlayAnotherRound(gamePlaySettings))
       {
          GiveCardsToPlayers(gamePlaySettings);
@@ -33,12 +34,12 @@ public class GamePlayManager : MonoBehaviour
    
    bool CanPlayAnotherRound(GamePlaySettings settings)
    {
-      return DeckManager.Instance.DoesPackHasCardsForAnotherRound(settings.PlayerCount, settings.NumCardsToGive);
+      return DeckManager.Instance.CanDealAnotherRound(settings.PlayerCount, settings.NumCardsToGive,gamePlaySettings.PlayUntilNoCardsLeft);
    }
 
    void GiveCardsToPlayers(GamePlaySettings settings)
    {
-      DeckManager.Instance.GivePlayersCard(settings.PlayerCount, settings.NumCardsToGive);
+      DeckManager.Instance.DealCardsToPlayers(settings.PlayerCount, settings.NumCardsToGive);
    }
 
    IEnumerator PlayRounds(GamePlaySettings settings)
@@ -55,7 +56,6 @@ public class GamePlayManager : MonoBehaviour
    IEnumerator PlaySingleRound(int playerIndex)
    {
       PlayerManager.Instance.GivePlayerPermissionToPlay(playerIndex);
-    
       yield return WaitForPlayerStep();
    }
 
@@ -65,6 +65,8 @@ public class GamePlayManager : MonoBehaviour
       {
          yield return null;
       }
+
+      yield return new WaitForSeconds(0.2f);//Movement time
       step = false;
    }
 }

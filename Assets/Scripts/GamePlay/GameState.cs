@@ -7,5 +7,6 @@ public enum GameState
     Default,
     PreGame,
     InGame,
-    GameEnd
+    GameEnd,
+    Restart
 }

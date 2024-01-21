@@ -33,12 +33,12 @@ public class PlayerManager : MonoBehaviour
 
     private void Start()
     {
-        DeckManager.Instance.EACardClicked += PlayerClickedACard;
+        DeckManager.Instance.OnCardClicked += PlayerClickedACard;
     }
 
     private void PlayerClickedACard(Card playedCard, int playerIndex)
     {
-        players[playerIndex].TryPlay(playedCard);
+        players[playerIndex].TryPlayCard(playedCard);
     }
 
     public void CreatePlayers(int playerCount)
@@ -94,7 +94,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void GivePlayersCard(IEnumerable<Card> cardsToPlay)
+    public void DistributeCardsToPlayers(IEnumerable<Card> cardsToPlay)
     {
         var howManyCardsShouldEachPlayerHave = cardsToPlay.Count() / players.Count;
         for (int i = 0; i < players.Count; i++)
@@ -108,7 +108,7 @@ public class PlayerManager : MonoBehaviour
 
     private void OnDisable()
     {
-        DeckManager.Instance.EACardClicked -= PlayerClickedACard;
+        DeckManager.Instance.OnCardClicked -= PlayerClickedACard;
     }
 
     private void CalculatePlayerPoints()
@@ -133,5 +133,18 @@ public class PlayerManager : MonoBehaviour
     {
         CalculatePlayerPoints();
         return players.Select(p => p.GetPoints()).ToList();
+    }
+
+    public int GetPlayerIndex()
+    {
+        return 0;
+    }
+
+    public void ResetPlayerScores()
+    {
+        foreach (var p in players)
+        {
+            p.ResetScore();
+        }
     }
 }

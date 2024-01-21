@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class GameRule
 {
-    public abstract bool ApplyGameRule(Card cardOnTop, Card playedCard, bool pistiPosible = false);
+    public abstract bool Apply(Card cardOnTop, Card playedCard);
 }

@@ -19,4 +19,9 @@
             cards.LastOrDefault().UpdateVisualsSortingOrder(SortingOrder.UnderCard);
             cardsInStashSlot[0].UpdateVisualsSortingOrder(SortingOrder.UpperCard);
         }
+
+        public void Clear()
+        {
+            cardsInStashSlot.Clear();
+        }
     }

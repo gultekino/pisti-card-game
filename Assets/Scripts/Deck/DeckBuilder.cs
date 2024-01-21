@@ -13,56 +13,57 @@ public class DeckBuilder : MonoBehaviour
 
     public List<Card> BuildDeck()
     {
-        List<Card> cards = new List<Card>(52);
-        for (int i = 0; i < suits.Length; i++)
-            AddCardsToList(cards,suits[i]);
+        var cards = new List<Card>(52);
+        foreach (var suit in suits)
+        {
+            AddCardsForSuit(cards, suit);
+        }
 
-        GivePointsToTheCards(cards);
+        AssignPointsToCards(cards);
         return cards;
     }
-    
-    private void AddCardsToList(List<Card> cards,Suit suit)
+
+    private void AddCardsForSuit(List<Card> cards, Suit suit)
     {
         for (int i = 1; i <= 13; i++)
         {
-            if (i > 10)
-                cards.Add(InstantiateImageCard(suit, i));
-            else
-                cards.Add(InstantiateRegularCard(suit, i));
+            var card = (i > 10) ? InstantiateSpecialCard(suit, i) : InstantiateRegularCard(suit, i);
+            cards.Add(card);
         }
     }
 
-    private void GivePointsToTheCards(List<Card> cards)
+    private void AssignPointsToCards(List<Card> cards)
     {
-        var clubTwo = cards.Where(card => (card.Number == CardNum.Two && card.Shape == Shape.Club));
-        foreach (var c in clubTwo)
-            c.Points = 2;
-        
-        var diaTen = cards.Where(card => (card.Number == CardNum.Ten && card.Shape == Shape.Diamond));
-        foreach (var c in diaTen)
-            c.Points = 3;
-        
-        var a = cards.Where(card => (card.Number == CardNum.As));
-        foreach (var c in a)
-            c.Points = 1;
-
-        var j = cards.Where(card => (card.Number == CardNum.J));
-        foreach (var c in j)
-            c.Points = 1;
+        AssignPoints(cards, CardNum.Two, Shape.Club, 2);
+        AssignPoints(cards, CardNum.Ten, Shape.Diamond, 3);
+        AssignPoints(cards, CardNum.As, null, 1);
+        AssignPoints(cards, CardNum.J, null, 1);
     }
-    
+
+    private void AssignPoints(IEnumerable<Card> cards, CardNum number, Shape? shape, int points)
+    {
+        var filteredCards = cards.Where(card => card.Number == number && (shape == null || card.Shape == shape));
+        foreach (var card in filteredCards)
+        {
+            card.Points = points;
+        }
+    }
+
     private Card InstantiateRegularCard(Suit suit, int cardNum)
     {
-        Card instantiatedObj = Instantiate(CardPrefab,CardContainer);
-        instantiatedObj.CardInit(cardNum,suit.Shape,suit.Color,suit.DefaultSprite,cardNum.ToString());
-        return instantiatedObj;
+        return InstantiateCard(suit, cardNum, suit.DefaultSprite, cardNum.ToString());
     }
 
-    Card InstantiateImageCard(Suit suit, int cardNum)
+    private Card InstantiateSpecialCard(Suit suit, int cardNum)
     {
-        int spriteIndexInArray = cardNum - 11;
-        Card instantiatedObj = Instantiate(CardPrefab, CardContainer);
-        instantiatedObj.CardInit(cardNum,suit.Shape,suit.Color,suit.ImageSprites[spriteIndexInArray],"");
-        return instantiatedObj;
+        int spriteIndex = cardNum - 11;
+        return InstantiateCard(suit, cardNum, suit.ImageSprites[spriteIndex], "");
+    }
+
+    private Card InstantiateCard(Suit suit, int cardNum, Sprite sprite, string text)
+    {
+        var card = Instantiate(CardPrefab, CardContainer);
+        card.InitializeCard(cardNum, suit.Shape, suit.Color, sprite, text);
+        return card;
     }
 }

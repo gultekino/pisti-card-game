@@ -7,35 +7,45 @@ public class AIPlayer : Player
 {
     [SerializeField] [Range(0,1)]private float AIIntelligence = 0f;
     private AIBehaviourBase aiBehaviour;
-    private bool executingMove = false;
+    private bool isExecutingMove = false;
+   
 
     private void Start()
     {
-        if (AIIntelligence<0.1f)
-            aiBehaviour = new DumbBehaviour();
-
-        aiBehaviour = new CardCounterAIBehaviour(AIIntelligence);
-        PlayerManager.Instance.EAPlayerPlayed += UpdateKnowledge;
+        InitializeAIBehaviour();
+        PlayerManager.Instance.EAPlayerPlayed += OnOtherPlayerPlayedCard;
     }
 
-    private void UpdateKnowledge(Card playedcard, Player player)
+    private void InitializeAIBehaviour()
+    {
+        aiBehaviour = AIIntelligence < 0.1f ? new DumbBehaviour() : new CardCounterAIBehaviour(AIIntelligence);
+    }
+
+    private void OnOtherPlayerPlayedCard(Card playedcard, Player player)
     {
         aiBehaviour.UpdateKnowledge(playedcard.Number);
     }
 
     private void Update()
     {
-        if (PermissionToPlay == false || executingMove)
+        if (!PermissionToPlay || isExecutingMove)
             return;
-        StartCoroutine(ExecuteMove());
+        
+        StartCoroutine(ExecuteMoveAfterDelay());
     }
 
-    private IEnumerator ExecuteMove()
+    private IEnumerator ExecuteMoveAfterDelay()
     {
-        executingMove = true;
-        yield return new WaitForSeconds(0.2f);
-        var cardToPlay = aiBehaviour.DecideMove(TableManager.Instance.GetCarNumOnTopCard(), cardsInHand);
-        TryPlay(cardToPlay);
-        executingMove = false;
+        isExecutingMove = true;
+        yield return new WaitForSeconds(0.2f); // Delay to simulate AI thinking time
+
+        PlayChosenCard();
+        isExecutingMove = false;
+    }
+    
+    private void PlayChosenCard()
+    {
+        var cardToPlay = aiBehaviour.DecideMove(TableManager.Instance.GetTopCardNumber(), cardsInHand);
+        TryPlayCard(cardToPlay);
     }
 }

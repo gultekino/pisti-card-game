@@ -425,6 +425,7 @@ MonoBehaviour:
   gamePlaySettings:
     playerCount: 2
     numCardsToGive: 4
+    playUntilNoCardsLeft: 1
 --- !u!4 &630690649
 Transform:
   m_ObjectHideFlags: 0

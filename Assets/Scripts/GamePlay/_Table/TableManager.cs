@@ -10,7 +10,7 @@ public class TableManager : MonoBehaviour
     [SerializeField] private Transform Center;
     [SerializeField] private Transform DeckLoc;
     private List<Card> cardsInTheCenter = new();
-    private GameRule[] gameRules = new GameRule[] { new JTakesAll(), new SameNumberTakeRule() };
+    private GameRule[] gameRules = new GameRule[] { new JTakesAllRule(), new MatchingNumberRule() };
     public static TableManager Instance => instance;
     private static TableManager instance;
     
@@ -76,13 +76,13 @@ public class TableManager : MonoBehaviour
         
         var cardOnTop = cardsInTheCenter[^2];
         var isPistiPossible = cardsInTheCenter.Count == 2;
-        if (ApplyRule(new JTakesAll(), cardOnTop, playedCard, player))
+        if (ApplyRule(new JTakesAllRule(), cardOnTop, playedCard, player))
         {
             Debug.Log("JTakesAll");
             return true;
         }
 
-        if (ApplyRule(new SameNumberTakeRule(), cardOnTop, playedCard, player))
+        if (ApplyRule(new MatchingNumberRule(), cardOnTop, playedCard, player))
         {
             CheckAndHandlePisti(player,isPistiPossible);
             return true;
@@ -93,7 +93,7 @@ public class TableManager : MonoBehaviour
 
     private bool ApplyRule(GameRule rule, Card cardOnTop, Card playedCard, Player player)
     {
-        if (rule.ApplyGameRule(cardOnTop, playedCard))
+        if (rule.Apply(cardOnTop, playedCard))
         {
             player.TakeCardsToTheStash(cardsInTheCenter);
             cardsInTheCenter.Clear();
@@ -112,7 +112,7 @@ public class TableManager : MonoBehaviour
     }
 
 
-    public CardNum GetCarNumOnTopCard()
+    public CardNum GetTopCardNumber()
     {
         var c = cardsInTheCenter.LastOrDefault();
         return c ? c.Number : CardNum.Default;
