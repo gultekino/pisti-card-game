@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -36,6 +37,6 @@ public static class ListExtentions
     public static void MovePosition<T>(this IList<Card> list, Vector3 loc)
     {
         foreach (var e in list)
-            e.transform.position = loc;
+            e.transform.DOMove(loc,0.3f);
     }
 }

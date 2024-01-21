@@ -1,5 +1,6 @@
     using System.Collections.Generic;
     using System.Linq;
+    using DG.Tweening;
     using TMPro;
     using UnityEngine;
 
@@ -15,7 +16,8 @@
             cardsInStashSlot.AddRange(cards);
             foreach (var card in cards)
             {
-                card.transform.position = transform.position;
+                DOTween.Sequence().SetDelay(0.3f).Append(       
+                    card.transform.DOMove(transform.position, 0.3f).Play());
             }
             if (cards.Any())
             {

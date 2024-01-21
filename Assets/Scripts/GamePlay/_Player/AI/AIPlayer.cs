@@ -37,7 +37,7 @@ public class AIPlayer : Player
     private IEnumerator ExecuteMoveAfterDelay()
     {
         isExecutingMove = true;
-        yield return new WaitForSeconds(0.2f); // Delay to simulate AI thinking time
+        yield return new WaitForSeconds(0.4f); // Delay to simulate AI thinking time
 
         PlayChosenCard();
         isExecutingMove = false;

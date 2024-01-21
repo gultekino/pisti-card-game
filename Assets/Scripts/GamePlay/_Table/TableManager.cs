@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
 
 public class TableManager : Singleton<TableManager>
@@ -34,7 +35,8 @@ public class TableManager : Singleton<TableManager>
 
     private void OnPlayerPlayed(Card playedCard, Player player)
     {
-        playedCard.transform.position = tableLocationHandler.GetCenterLocation().position;
+        playedCard.transform.DOMove(
+            tableLocationHandler.GetCenterLocation().position, 0.3f);
         var cardOnTop = GetCardOnTop();
         cardInteractionHandler.UpdateCardDrawingOrder(playedCard,cardOnTop);
         cardsInCenter.Add(playedCard);
