@@ -16,9 +16,8 @@ public abstract class Player : MonoBehaviour
     protected List<Card> cardsInHand = new();
     public bool PermissionToPlay { get; set; }
 
-    public delegate void PlayerPlayed(Card playedCard, Player player);
-    public event PlayerPlayed OnPlayerPlayed;
-
+    public event Action<Card, Player> OnPlayerPlayed;
+    
     protected virtual void Awake()
     {
         cardHoldingSlots = GetComponentsInChildren<Slot>().ToList();

@@ -12,12 +12,7 @@ public class PlayerManager : Singleton<PlayerManager>
     [SerializeField] private Player aiPrefab;
     [SerializeField] private Transform playerContainer;
     private List<Player> players = new();
-    
-    public delegate void PlayerPlayed(Card playedCard,Player player);
-    public event PlayerPlayed OnPlayerPlayed;
-    
-    public delegate void PlayerTookCards(Card[] playedCard,int playerIndex);
-    public event PlayerTookCards EPlayerTookCards;
+    public event Action<Card, Player> OnPlayerPlayed;
 
     private void Start()
     {
@@ -82,7 +77,6 @@ public class PlayerManager : Singleton<PlayerManager>
             var list =cardsToPlay.Skip(i*howManyCardsShouldEachPlayerHave).Take((i+1)*howManyCardsShouldEachPlayerHave);
             var playedCard = list as Card[] ?? list.ToArray();
             players[i].TakeCards(playedCard);
-            EPlayerTookCards?.Invoke(playedCard,i);
         }
     }
 
