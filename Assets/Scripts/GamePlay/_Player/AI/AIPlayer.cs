@@ -13,7 +13,7 @@ public class AIPlayer : Player
     private void Start()
     {
         InitializeAIBehaviour();
-        PlayerManager.Instance.EAPlayerPlayed += OnOtherPlayerPlayedCard;
+        PlayerManager.Instance.OnPlayerPlayed += OnOtherPlayerPlayedCard;
     }
 
     private void InitializeAIBehaviour()
@@ -45,7 +45,7 @@ public class AIPlayer : Player
     
     private void PlayChosenCard()
     {
-        var cardToPlay = aiBehaviour.DecideMove(TableManager.Instance.GetTopCardNumber(), cardsInHand);
+        var cardToPlay = aiBehaviour.DecideMove(TableManager.Instance.TopCardNumber, cardsInHand);
         TryPlayCard(cardToPlay);
     }
 }

@@ -12,7 +12,7 @@ public class GamePlayManager : MonoBehaviour
    {
       PlayerManager.Instance.CreatePlayers(gamePlaySettings.PlayerCount);
       StartCoroutine(GameLoop());
-      PlayerManager.Instance.EAPlayerPlayed += StepInGameLoop;
+      PlayerManager.Instance.OnPlayerPlayed += StepInGameLoop;
    }
 
    private void StepInGameLoop(Card playedcard, Player player)

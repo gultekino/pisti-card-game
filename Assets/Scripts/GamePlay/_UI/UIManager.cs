@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameEndMenu endMenu;
     void Start()
     {
-        GameStateHandler.EOnGameStateChange += OnGameEnd;
+        GameStateHandler.OnGameStateChange += OnGameEnd;
     }
 
     private void OnGameEnd(GameState changedState)

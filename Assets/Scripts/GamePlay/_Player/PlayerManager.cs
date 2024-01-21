@@ -16,7 +16,7 @@ public class PlayerManager : MonoBehaviour
     private List<Player> players = new List<Player>();
     
     public delegate void PlayerPlayed(Card playedCard,Player player);
-    public event PlayerPlayed EAPlayerPlayed;
+    public event PlayerPlayed OnPlayerPlayed;
     
     public delegate void PlayerTookCards(Card[] playedCard,int playerIndex);
     public event PlayerTookCards EPlayerTookCards;
@@ -45,7 +45,7 @@ public class PlayerManager : MonoBehaviour
     {
         for (int i = 0; i < playerCount; i++)
         {
-            var playerSpawnLoc = TableManager.Instance.GetPlayerLoc(i);
+            var playerSpawnLoc = TableManager.Instance.GetPlayerLocation(i);
             var pos = playerSpawnLoc.position;
             var rot = playerSpawnLoc.rotation;
             Player player;
@@ -63,7 +63,7 @@ public class PlayerManager : MonoBehaviour
     public void OnPlayerMadeMove(Card playedCard,Player player)
     {
         player.PermissionToPlay = false;
-        EAPlayerPlayed?.Invoke(playedCard,player);
+        OnPlayerPlayed?.Invoke(playedCard,player);
     }
 
     public void TakePlayerPermissionToPlay(int playerIndex)

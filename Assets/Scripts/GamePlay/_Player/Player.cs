@@ -78,7 +78,7 @@ public class Player : MonoBehaviour
         playerPoints.MadePisti();
     }
 
-    public void TakeCardsToTheStash(IEnumerable<Card> cardsInTheCenter)
+    public void CollectCards(IEnumerable<Card> cardsInTheCenter)
     {
         playerWonTheLast = this;
         stashSlot.CarryNewCards(cardsInTheCenter);

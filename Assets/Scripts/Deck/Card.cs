@@ -33,7 +33,7 @@ public class Card : MonoBehaviour
         DeckManager.Instance.PlayerInteractedWithCard(this,PlayerManager.Instance.GetPlayerIndex());
     }
 
-    public void UpdateVisualsSortingOrder(SortingOrder order)
+    public void UpdateVisualSortingOrder(SortingOrder order)
     {
         Order = order;
         UpdateSortingOrder(spriteRenderer, order);

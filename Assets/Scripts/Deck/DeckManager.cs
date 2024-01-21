@@ -58,12 +58,12 @@ public class DeckManager : MonoBehaviour
 
     private void SetInitialCardSortingOrder()
     {
-        deck.FirstOrDefault()?.UpdateVisualsSortingOrder(SortingOrder.UpperCard);
+        deck.FirstOrDefault()?.UpdateVisualSortingOrder(SortingOrder.UpperCard);
     }
 
     private void MoveDeckToTable()
     {
-        deck.MovePosition<Transform>(TableManager.Instance.GetDeckLoc().position);
+        deck.MovePosition<Transform>(TableManager.Instance.DeckLocation.position);
     }
 
     public bool CanDealAnotherRound(int playerCount, int cardsPerPlayer, bool playUntilNoCardLeft)

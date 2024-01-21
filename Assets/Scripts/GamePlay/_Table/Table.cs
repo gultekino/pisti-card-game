@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Table
 {
-    private List<Card> cardsOnTable;
+    private readonly List<Card> cardsOnTable = new List<Card>();
 
     public List<Card> CardsOnTable => cardsOnTable;
 }

@@ -5,19 +5,23 @@
 
     public class StashSlot : MonoBehaviour
     {
-        private List<Card> cardsInStashSlot = new();
+       
+        private readonly List<Card> cardsInStashSlot = new List<Card>();
 
         public List<Card> CardsInStashSlot => cardsInStashSlot;
 
         public void CarryNewCards(IEnumerable<Card> cards)
         {
             cardsInStashSlot.AddRange(cards);
-            foreach (var c in cards)
+            foreach (var card in cards)
             {
-                c.transform.position = transform.position;
+                card.transform.position = transform.position;
             }
-            cards.LastOrDefault().UpdateVisualsSortingOrder(SortingOrder.UnderCard);
-            cardsInStashSlot[0].UpdateVisualsSortingOrder(SortingOrder.UpperCard);
+            if (cards.Any())
+            {
+                cards.Last().UpdateVisualSortingOrder(SortingOrder.UnderCard);
+                cardsInStashSlot[0].UpdateVisualSortingOrder(SortingOrder.UpperCard);
+            }
         }
 
         public void Clear()

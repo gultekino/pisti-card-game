@@ -311,8 +311,8 @@ MonoBehaviour:
   - {fileID: 567025310}
   - {fileID: 219303803}
   - {fileID: 568623660}
-  Center: {fileID: 390092090}
-  DeckLoc: {fileID: 924781314}
+  centerTransform: {fileID: 390092090}
+  deckLocation: {fileID: 924781314}
 --- !u!4 &554802840
 Transform:
   m_ObjectHideFlags: 0
