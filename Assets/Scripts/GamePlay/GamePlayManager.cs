@@ -15,7 +15,7 @@ public class GamePlayManager : MonoBehaviour
       PlayerManager.Instance.OnPlayerPlayed += StepInGameLoop;
    }
 
-   private void StepInGameLoop(Card playedcard, Player player)
+   private void StepInGameLoop(Card card, Player player)
    {
       step = true;
    }
