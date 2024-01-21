@@ -3,21 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class DeckManager : MonoBehaviour
+public class DeckManager : Singleton<DeckManager>
 {
-    private static DeckManager instance;
-    public static DeckManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<DeckManager>();
-            }
-            return instance;
-        }
-    }
-
     private DeckBuilder deckBuilder;
     private List<Card> deck;
     private List<Card> playedCards = new ();
@@ -25,23 +12,11 @@ public class DeckManager : MonoBehaviour
     private IDeckShuffler deckShuffler;
     public event Action<Card, int> OnCardClicked;
 
-    private void Awake()
+    protected override void Awake()
     {
-        InitializeSingleton();
+        base.Awake();
         cardDistributor = new CardDistributor();
         deckShuffler = new DeckShuffler();
-    }
-
-    private void InitializeSingleton()
-    {
-        if (instance != null && instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        instance = this;
-        DontDestroyOnLoad(this);
     }
 
     public void InitializeDeck()

@@ -1,6 +1,6 @@
 public class CardInteractionHandler : ICardInteractionHandler
 {
-    private GameRuleManager gameRuleManager = new GameRuleManager();
+    private GameRuleManager gameRuleManager = new();
 
     public IGameRule HandleCardPlayed(Card playedCard, Card cardOnTop)
     {

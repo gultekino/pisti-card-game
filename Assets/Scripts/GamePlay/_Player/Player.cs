@@ -13,11 +13,11 @@ public abstract class Player : MonoBehaviour
     protected List<Slot> cardHoldingSlots;
     protected StashSlot stashSlot;
     protected Points playerPoints = new();
-    protected List<Card> cardsInHand = new List<Card>();
+    protected List<Card> cardsInHand = new();
     public bool PermissionToPlay { get; set; }
 
     public delegate void PlayerPlayed(Card playedCard, Player player);
-    public event PlayerPlayed EPlayerPlayed;
+    public event PlayerPlayed OnPlayerPlayed;
 
     protected virtual void Awake()
     {
@@ -41,7 +41,7 @@ public abstract class Player : MonoBehaviour
     {
         if (cardsInHand.Contains(playedCard) && PermissionToPlay)
         {
-            EPlayerPlayed?.Invoke(playedCard, this);
+            OnPlayerPlayed?.Invoke(playedCard, this);
             EmptyPlayedCardSlot(playedCard);
             cardsInHand.Remove(playedCard);
         }

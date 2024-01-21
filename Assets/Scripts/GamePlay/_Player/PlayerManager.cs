@@ -6,31 +6,18 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : Singleton<PlayerManager>
 {
-    public static PlayerManager Instance => instance;
-    private static PlayerManager instance;
-
     [SerializeField] private Player humanPlayer;
     [SerializeField] private Player aiPrefab;
     [SerializeField] private Transform playerContainer;
-    private List<Player> players = new List<Player>();
+    private List<Player> players = new();
     
     public delegate void PlayerPlayed(Card playedCard,Player player);
     public event PlayerPlayed OnPlayerPlayed;
     
     public delegate void PlayerTookCards(Card[] playedCard,int playerIndex);
     public event PlayerTookCards EPlayerTookCards;
-    private void Awake()
-    {
-        if (instance != null)
-        {
-            Destroy(this);
-            return;
-        }
-
-        instance = this;
-    }
 
     private void Start()
     {
@@ -55,7 +42,7 @@ public class PlayerManager : MonoBehaviour
             else
                 player = Instantiate(aiPrefab, pos, rot, playerContainer);
 
-            player.EPlayerPlayed += OnPlayerMadeMove;
+            player.OnPlayerPlayed += OnPlayerMadeMove;
             players.Add(player);
 
         }
@@ -87,14 +74,6 @@ public class PlayerManager : MonoBehaviour
         return true;
     }
 
-    private void OnDestroy()
-    {
-        for (int i = 0; i < players.Count; i++)
-        {
-            players[i].EPlayerPlayed -= OnPlayerMadeMove;
-        }
-    }
-
     public void DistributeCardsToPlayers(IEnumerable<Card> cardsToPlay)
     {
         var howManyCardsShouldEachPlayerHave = cardsToPlay.Count() / players.Count;
@@ -109,6 +88,9 @@ public class PlayerManager : MonoBehaviour
 
     private void OnDisable()
     {
+        DeckManager.Instance.OnCardClicked -= PlayerClickedACard;
+        foreach (var p in players)
+            p.OnPlayerPlayed -= OnPlayerMadeMove;
         DeckManager.Instance.OnCardClicked -= PlayerClickedACard;
     }
 

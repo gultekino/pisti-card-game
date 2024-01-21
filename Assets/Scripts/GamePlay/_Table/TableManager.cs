@@ -2,25 +2,16 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TableManager : MonoBehaviour
+public class TableManager : Singleton<TableManager>
 {
     [SerializeField] private TableLocationHandler tableLocationHandler;
     private CardInteractionHandler cardInteractionHandler;
+    private List<Card> cardsInCenter = new();
 
-    private List<Card> cardsInCenter = new List<Card>();
-    private static TableManager instance;
-    public static TableManager Instance => instance ?? (instance = FindObjectOfType<TableManager>());
-
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         GameStateHandler.OnGameStateChange += OnGameStateChange;
-        if (instance != null && instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        instance = this;
     }
 
     private void Start()
@@ -77,5 +68,6 @@ public class TableManager : MonoBehaviour
     private void OnDisable()
     {
         PlayerManager.Instance.OnPlayerPlayed -= OnPlayerPlayed;
+        GameStateHandler.OnGameStateChange -= OnGameStateChange;
     }
 }

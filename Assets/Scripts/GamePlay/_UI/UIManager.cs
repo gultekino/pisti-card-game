@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,10 +29,9 @@ public class UIManager : MonoBehaviour
         GameStateHandler.GameState = GameState.Restart;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
-    
-    public void OnResetScoresClicked()
+
+    private void OnDisable()
     {
-        PlayerManager.Instance.ResetPlayerScores();
-        OnPlayAgainClicked();
+        GameStateHandler.OnGameStateChange -= HandleGameStateChange;
     }
 }

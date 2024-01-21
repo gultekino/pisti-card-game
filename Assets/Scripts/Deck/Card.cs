@@ -21,43 +21,40 @@ public class Card : MonoBehaviour
     {
         InitializeComponents();
     }
-
-    public void InitializeCard(int value, Shape shape, CardColor color, Sprite visual, string text)
-    {
-        AssignCardAttributes(value, shape, color);
-        UpdateVisuals(visual, text);
-    }
-
+    
     private void OnMouseUp()
     {
         DeckManager.Instance.PlayerInteractedWithCard(this,PlayerManager.Instance.GetPlayerIndex());
     }
-
-    public void UpdateVisualSortingOrder(SortingOrder order)
-    {
-        Order = order;
-        UpdateSortingOrder(spriteRenderer, order);
-        UpdateSortingOrder(tmProText, order);
-    }
-    
     private void InitializeComponents()
     {
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         tmpText = GetComponentInChildren<TMP_Text>();
         tmProText = GetComponentInChildren<TextMeshPro>();
     }
-
+    public void InitializeCard(int value, Shape shape, CardColor color, Sprite visual, string text)
+    {
+        AssignCardAttributes(value, shape, color);
+        UpdateVisuals(visual, text);
+    }
     private void AssignCardAttributes(int value, Shape shape, CardColor color)
     {
         Number = (CardNum)value;
         Shape = shape;
         Color = color;
     }
-
+    
     private void UpdateVisuals(Sprite visual, string text)
     {
         spriteRenderer.sprite = visual;
         tmpText.SetText(text);
+    }
+    
+    public void UpdateVisualSortingOrder(SortingOrder order)
+    {
+        Order = order;
+        UpdateSortingOrder(spriteRenderer, order);
+        UpdateSortingOrder(tmProText, order);
     }
     
     private void UpdateSortingOrder(Renderer renderer, SortingOrder order)

@@ -6,7 +6,7 @@
     public class StashSlot : MonoBehaviour
     {
        
-        private readonly List<Card> cardsInStashSlot = new List<Card>();
+        private readonly List<Card> cardsInStashSlot = new();
 
         public List<Card> CardsInStashSlot => cardsInStashSlot;
 

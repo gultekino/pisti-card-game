@@ -48,4 +48,9 @@ public class AIPlayer : Player
         var cardToPlay = aiBehaviour.DecideMove(TableManager.Instance.TopCardNumber, cardsInHand);
         TryPlayCard(cardToPlay);
     }
+
+    private void OnDisable()
+    {
+        PlayerManager.Instance.OnPlayerPlayed -= OnOtherPlayerPlayedCard;
+    }
 }

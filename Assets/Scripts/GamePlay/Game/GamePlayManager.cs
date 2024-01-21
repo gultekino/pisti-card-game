@@ -44,4 +44,9 @@ public class GamePlayManager : MonoBehaviour
    {
       return DeckManager.Instance.CanDealAnotherRound(settings.PlayerCount, settings.NumCardsToGive,gamePlaySettings.PlayUntilNoCardsLeft);
    }
+
+   private void OnDisable()
+   {
+      playerManager.OnPlayerPlayed -= StepInRound;
+   }
 }
